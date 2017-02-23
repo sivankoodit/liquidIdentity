@@ -2,6 +2,7 @@
 <html lang="en-US">
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-cookies.js"></script>
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <link rel="stylesheet" href="index.css">
@@ -11,7 +12,12 @@
 	<div ng-view></div>
 	<div ng-include='"components/footer/footer.html"'></div>
 </div>
-
  <script src="app/app.js"></script>
+ <script src="components/services/alert.js"></script>
+ <script src="components/services/auth.js"></script>
+ <script src="app/signup/signup.js"></script>
+ <script src="app/login/login.js"></script>
+ <script src="app/newsitem/newsitem.js"></script>
+ <script src="app/settings/settings.js"></script>
 </body>
 </html>

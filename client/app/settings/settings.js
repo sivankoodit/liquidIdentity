@@ -1,6 +1,6 @@
 var liquidApp = angular.module('liquidAccessApp');
 
-liquidApp.controller('signupCtrl', function($scope) {
+liquidApp.controller('settingsCtrl', function($scope) {
 	this.userinfo = {
 		firstname: null,
 		lastname: null,

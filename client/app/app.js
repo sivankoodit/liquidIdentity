@@ -1,4 +1,4 @@
-var liquidApp = angular.module('liquidAccessApp', ['ngRoute']);
+var liquidApp = angular.module('liquidAccessApp', ['ngRoute', 'ngCookies']);
 
 liquidApp.config(function($routeProvider) {
 	$routeProvider
@@ -18,4 +18,5 @@ liquidApp.config(function($routeProvider) {
 	.when("/newsitem", {
 		templateUrl: "app/newsitem/newsitem.html"
 	});
+	//.otherwise({ redirectTo: '/' });
 });

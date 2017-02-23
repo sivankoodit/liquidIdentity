@@ -1,6 +1,6 @@
 var liquidApp = angular.module('liquidAccessApp');
 
-liquidApp.controller('signupCtrl', function($scope) {
+liquidApp.controller('navBarCtrl', function($scope) {
 	this.userinfo = {
 		firstname: null,
 		lastname: null,
@@ -10,13 +10,9 @@ liquidApp.controller('signupCtrl', function($scope) {
 		agreedToTerms: null
 	};
 
-	this.signup = function()  {
-		if(password && password !== confirmpwd) {
-			console.log('Error');
-		} else if(!agreedToTerms) {
-		}
-		else {
+	this.getLoggedInUser = function()  {
+		
 			// Call server
-		}
+		
 	};		
 });
