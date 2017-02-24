@@ -1,30 +1,31 @@
-    'use strict';
- 
-    angular
-        .module('liquidAccessApp')
-        .controller('loginController', ['$location', 'AuthenticationService', 'FlashService',  function ($location, AuthenticationService, FlashService) {
-        var vm = this;
- 
-        vm.login = login;
- 
-        (function initController() {
-            // reset login status
-            AuthenticationService.ClearSession();
-        })();
- 
-        function login() {
-            vm.dataLoading = true;
-            AuthenticationService.Login(vm.userEmail, vm.userPwd, function (response) {
-                if (response.success) {
-					vm.dataLoading = false;
-                    AuthenticationService.PersistUser();
-                    $location.path('#/');
-                } else {
-                    FlashService.Error(response.message);
-                    vm.dataLoading = false;
-                }
-            });
-        };
-    }]);
- 
+var liquidApp = angular.module('liquidAccessApp');
 
+liquidApp.controller('loginController', ['$scope', '$window', 'AuthService', '$location', function($scope, $window, AuthService, $location) {
+    var vm = this;
+
+    this.login = function()  {
+        if(vm.email && vm.password) {
+            // initial values
+            vm.error = false;
+            vm.disabled = true;
+
+            // call register from service
+            AuthService.login(vm.email, vm.password)
+            // handle success
+                .then(function (response) {
+                    console.log(response);
+                    $location.path("/");
+                    vm.disabled = false;
+                })
+                // handle error
+                .catch(function (errResponse) {
+                    vm.error = true;
+                    vm.errorMessage = "Something went wrong!";
+                    vm.disabled = false;
+                });
+        }
+        else {
+            $window.alert("Enter username and password to login");
+        }
+    };
+}]);

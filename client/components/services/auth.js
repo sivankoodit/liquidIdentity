@@ -1,147 +1,188 @@
-'use strict';
+angular.module('liquidAccessApp').factory('AuthService',
+    ['$q', '$timeout', '$http',
+        function ($q, $timeout, $http) {
 
-angular.module('liquidAccessApp')
-	.factory('AuthenticationService', ['$http', '$cookies', '$rootScope', function ($http, $cookies, $rootScope) {
-    var service = {};
-
-    service.Login = Login;
-    service.PersistSession = PersistSession;
-    service.ClearSession = ClearSession;
-	service.GetCurrentUser = GetCurrentUser;
-
-	return service;
-
-	function GetCurrentUser() {
-		if($rootScope.globals.currentUser) {
-			return $rootScope.globals.currentUser.name;
-		}
-		else {
-			return "";
-		}
-	};
-
-    function Login(username, password, callback) {       
-
-        /* Use this for real authentication
-         ----------------------------------------------*/
-        $http.post('/api/authenticate', { username: username, password: password })
-            .then(function (response) {
-             	callback(response);
-				$rootScope.globals = {currentUser: {name: username}};
-				
-	        }, function(errResponse) {
-				 console.log("Req1uest failed");
-				 var respData = errResponse.data || 'Request failed';
-          		 var respStatus = errResponse.status;
-				 callback(response);
-			});
-
-		$rootScope.globals = {currentUser: {name: username}};
-
-    } //end of Login
-
-    function PersistSession() {
-        var authdata = Base64.encode(user.name);
-
-        $rootScope.globals.currentUser.authdata = authdata;
-
-        // set default auth header for http requests
-        $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
-
-        // store user details in globals cookie that keeps user logged in for 1 week (or until they logout)
-        var cookieExp = new Date();
-        cookieExp.setDate(cookieExp.getDate() + 7);
-        $cookies.putObject('globals', $rootScope.globals, { expires: cookieExp });
-    }
-
-    function ClearSession() {
-        $rootScope.globals = {};
-        $cookies.remove('globals');
-        $http.defaults.headers.common.Authorization = 'Basic';
-    }
+            // create user variable
+            var CURRENT_USER = "currentUser";
+            var LOCAL_TOKEN_KEY = 'yourTokenKey';
 
 
-// Base64 encoding service used by AuthenticationService
-var Base64 = {
-
-    keyStr: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
-
-    encode: function (input) {
-        var output = "";
-        var chr1, chr2, chr3 = "";
-        var enc1, enc2, enc3, enc4 = "";
-        var i = 0;
-
-        do {
-            chr1 = input.charCodeAt(i++);
-            chr2 = input.charCodeAt(i++);
-            chr3 = input.charCodeAt(i++);
-
-            enc1 = chr1 >> 2;
-            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-            enc4 = chr3 & 63;
-
-            if (isNaN(chr2)) {
-                enc3 = enc4 = 64;
-            } else if (isNaN(chr3)) {
-                enc4 = 64;
+            function loadUserCredentials() {
+                var token = window.localStorage.getItem(LOCAL_TOKEN_KEY);
+                if (token) {
+                    SetAuthHeader(token);
+                }
             }
 
-            output = output +
-                this.keyStr.charAt(enc1) +
-                this.keyStr.charAt(enc2) +
-                this.keyStr.charAt(enc3) +
-                this.keyStr.charAt(enc4);
-            chr1 = chr2 = chr3 = "";
-            enc1 = enc2 = enc3 = enc4 = "";
-        } while (i < input.length);
-
-        return output;
-    },
-
-    decode: function (input) {
-        var output = "";
-        var chr1, chr2, chr3 = "";
-        var enc1, enc2, enc3, enc4 = "";
-        var i = 0;
-
-        // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
-        var base64test = /[^A-Za-z0-9\+\/\=]/g;
-        if (base64test.exec(input)) {
-            window.alert("There were invalid base64 characters in the input text.\n" +
-                "Valid base64 characters are A-Z, a-z, 0-9, '+', '/',and '='\n" +
-                "Expect errors in decoding.");
-        }
-        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-
-        do {
-            enc1 = this.keyStr.indexOf(input.charAt(i++));
-            enc2 = this.keyStr.indexOf(input.charAt(i++));
-            enc3 = this.keyStr.indexOf(input.charAt(i++));
-            enc4 = this.keyStr.indexOf(input.charAt(i++));
-
-            chr1 = (enc1 << 2) | (enc2 >> 4);
-            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-            chr3 = ((enc3 & 3) << 6) | enc4;
-
-            output = output + String.fromCharCode(chr1);
-
-            if (enc3 != 64) {
-                output = output + String.fromCharCode(chr2);
-            }
-            if (enc4 != 64) {
-                output = output + String.fromCharCode(chr3);
+            function storeUserDetails(token, user) {
+                window.localStorage.setItem(LOCAL_TOKEN_KEY, token);
+                window.localStorage.setItem(CURRENT_USER, angular.toJson(user));
+                SetAuthHeader(token);
             }
 
-            chr1 = chr2 = chr3 = "";
-            enc1 = enc2 = enc3 = enc4 = "";
+            function SetAuthHeader(token) {
+                // Set the token as header for your requests!
+                $http.defaults.headers.common.Authorization = token;
+            }
 
-        } while (i < input.length);
+            function destroyUserDetails() {
+                $http.defaults.headers.common.Authorization = undefined;
+                window.localStorage.removeItem(LOCAL_TOKEN_KEY);
+                window.localStorage.removeItem(CURRENT_USER);
+            }
 
-        return output;
-    }
-}; // end of Base64 definition
-}]); 
+            function getCurrentUser() {
+                var strUser = window.localStorage.getItem(CURRENT_USER);
+                if(strUser)
+                    return angular.fromJson(strUser);
+                else
+                    return null;
+            }
+
+            loadUserCredentials();
+            // return available functions for use in the controllers
+            return ({
+                getUserInfo: getUserInfo,
+                login: login,
+                logout: logout,
+                register: register,
+                getAuthToken: getAuthToken,
+                getCurrentUser: getCurrentUser
+            });
 
 
+            function getAuthToken() {
+                return $http.defaults.headers.common.Authorization;
+            }
+
+            function getUserInfo() {
+
+                // create a new instance of deferred
+                var deferred = $q.defer();
+
+                $http.get('/api/memberinfo')
+                // handle success
+                    .success(function (data) {
+                        if(data.success){
+                            deferred.resolve(data);
+                        } else {
+                            currentUser = null;
+                            deferred.reject();
+                        }
+                    })
+                    // handle error
+                    .error(function (data) {
+                        currentUser = null;
+                        deferred.reject();
+                    });
+                return deferred.promise;
+            }
+
+            function login(email, password) {
+
+                // create a new instance of deferred
+                var deferred = $q.defer();
+
+                // send a post request to the server
+                $http.post('/api/authenticate',
+                    {email: email, password: password})
+                // handle success
+                    .success(function (data, status) {
+                        if(status === 200 && data.token){
+                            storeUserDetails(data.token, data.user);
+                            deferred.resolve(data);
+
+
+                        } else {
+                            currentUser = null;
+                            deferred.reject();
+                        }
+                    })
+                    // handle error
+                    .error(function (data) {
+                        currentUser = null;
+                        deferred.reject();
+                    });
+
+                // return promise object
+                return deferred.promise;
+
+            }
+
+            function logout() {
+
+                // create a new instance of deferred
+                var deferred = $q.defer();
+
+                // send a get request to the server
+                $http.post('/api/logout')
+                // handle success
+                    .success(function (data) {
+                        currentUser = null;
+                        destroyUserDetails();
+                        deferred.resolve();
+                    })
+                    // handle error
+                    .error(function (data) {
+                        currentUser = null;
+                        deferred.reject();
+                    });
+
+                // return promise object
+                return deferred.promise;
+
+            }
+
+            function register(firstname, lastname, password, email) {
+
+                // create a new instance of deferred
+                var deferred = $q.defer();
+
+                // send a post request to the server
+                $http.post('/api/signup',
+                    {firstname: firstname, lastname: lastname, password: password, email: email})
+                // handle success
+                    .success(function (data, status) {
+                        console.log(data);
+                        console.log(status);
+                        if(status === 200 && data.token){
+                            storeUserDetails(data.token, data.user);
+                            deferred.resolve(data);
+                        } else {
+                            deferred.reject();
+                        }
+                    })
+                    // handle error
+                    .error(function (data) {
+                        deferred.reject();
+                    });
+
+                // return promise object
+                return deferred.promise;
+
+            }
+
+            function getTransferInfo(token) {
+
+                // create a new instance of deferred
+                var deferred = $q.defer();
+
+                $http.get('/api/lqaccess', {params:{info: token}})
+                // handle success
+                    .success(function (data) {
+                        if(status === 200 && data.token){
+                            storeUserDetails(data.token, data.user);
+                            deferred.resolve(data);
+                        } else {
+                            deferred.reject();
+                        }
+                    })
+                    // handle error
+                    .error(function (data) {
+                        currentUser = null;
+                        deferred.reject();
+                    });
+                return deferred.promise;
+            }
+
+        }]);

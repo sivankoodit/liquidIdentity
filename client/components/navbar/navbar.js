@@ -1,18 +1,31 @@
+/**
+ * Created by siva on 23/02/2017.
+ */
 var liquidApp = angular.module('liquidAccessApp');
 
-liquidApp.controller('navBarCtrl', function($scope) {
-	this.userinfo = {
-		firstname: null,
-		lastname: null,
-		email: null,
-		password: null,
-		confirmpwd: null,
-		agreedToTerms: null
-	};
+liquidApp.controller('navBarController', ['AuthService', function(AuthService) {
+    var vm = this;
 
-	this.getLoggedInUser = function()  {
-		
-			// Call server
-		
-	};		
-});
+    this.isActive = function (viewLocation) {
+    	this.updateUser();
+        return viewLocation === $location.path();
+    };
+
+    this.updateUser = function() {
+
+    	// call register from service
+        AuthService.getUserInfo()
+        // handle success
+            .then(function (response) {
+                console.log(response);
+                vm.welcomeMsg = "Welcome " + response.user.firstname + " " + response.user.lastname;
+            })
+            // handle error
+            .catch(function (errResponse) {
+                vm.welcomeMsg = "Welcome! Login to access subscriber contents";
+            });
+    };
+
+    this.updateUser();
+
+}]);

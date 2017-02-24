@@ -17,6 +17,9 @@ liquidApp.config(function($routeProvider) {
 	})
 	.when("/newsitem", {
 		templateUrl: "app/newsitem/newsitem.html"
+	})
+	.when("/switch", {
+		templateUrl: "app/switchdevice/switchInfo.html"
 	});
 	//.otherwise({ redirectTo: '/' });
 });

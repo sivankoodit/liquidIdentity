@@ -4,7 +4,7 @@
  * License: MIT
  */
 
-angular.module('myApp')
+angular.module('liquidAccessApp')
   .directive('qrcode', ['$window', function($window) {
 
     var canvas2D = !!$window.CanvasRenderingContext2D,
