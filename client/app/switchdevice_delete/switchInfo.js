@@ -1,6 +1,20 @@
 var liquidApp = angular.module('liquidAccessApp');
+liquidApp.controller('showQRCodeCtrl', ['AuthService', function($scope, $modalInstance, currentUrl, AuthService ){
 
-liquidApp.controller('switchController', ['$scope', '$window', 'AuthService', '$location', '$routeParams', function($scope, $window, AuthService, $location, $routeParams) {
+    this.refreshCode = function()  {
+        // call register from service
+        var token = AuthService.getAuthToken();
+        var onlyToken = token.substr(4);
+        this.qrUrl = $uibModalInstance.currentUrl + "?info=" + onlyToken;
+    };
+
+    this.close = function() {
+        $uibModalInstance.close();
+    };
+}]);
+
+
+/* liquidApp.controller('switchController', ['$scope', '$window', 'AuthService', '$location', '$routeParams', function($scope, $window, AuthService, $location, $routeParams) {
     var vm = this;
     var switchInfo = $routeParams.info;
 
@@ -31,3 +45,4 @@ liquidApp.controller('switchController', ['$scope', '$window', 'AuthService', '$
         this.qrUrl = $location.absUrl() + "?info=" + onlyToken;
     };
 }]);
+*/

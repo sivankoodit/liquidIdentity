@@ -1,11 +1,13 @@
+<div ng-include='"components/navbar/navbar.html"'></div>
+
 <div class="jumbotron text-center">
   <h1>Just in</h1>
-  <p>Moose protest over right of way!</p> 
+  <p>Real time weather news!</p>
 </div>
-<div class="container">
+<div class="container" ng-app="liquidAccessApp"  ng-controller="homeController as vm">
   <div class="row">
 	<div class="col-sm-4">
-		<a href="#/newsitem">
+		<a href="" ng-click="vm.isLoggedIn()">
 			<div>
 				<h3>Snow storm test</h3>
 				  <p>Lorem ipsum dolor..</p>
@@ -14,18 +16,18 @@
 		</a>
 	</div>
 	<div class="col-sm-4">
-	 <a href="#/newsitem">
+	 <a href="" ng-click="vm.isLoggedIn()">
 			<div>
-				<h3>Grey sky</h3>
+				<h3>Sunny sky</h3>
 				  <p>Lorem ipsum dolor..</p>
 				  <p>Ut enim ad..</p>
 			</div>
 		</a>
 	</div>
 	<div class="col-sm-4">
-	 <a href="#/newsitem">
+	 <a href="" ng-click="vm.isLoggedIn()">
 			<div>
-				<h3>Slippery roads</h3>
+				<h3>Snow cover</h3>
 				  <p>Lorem ipsum dolor..</p>
 				  <p>Ut enim ad..</p>
 			</div>

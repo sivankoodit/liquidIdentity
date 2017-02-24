@@ -1,17 +1,50 @@
-<nav class="navbar navbar-inverse" ng-app="liquidAccessApp" ng-controller="navBarController as vm">
+<div ng-app="liquidAccessApp" ng-controller="navBarController as vm">
+
+<nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
       <a class="navbar-brand" href="#/">Weather news</a>
     </div>
     <ul class="nav navbar-nav">
-      <li ng-class="{ active: isActive('#/')}"><a href="#/">Home</a></li>
-      <li><a>{{vm.welcomeMsg}}</a></li>
+      <li ng-class="{ active: isActive('/')}"><a href="#/">Home</a></li>
+      <li><p class="navbar-text">{{vm.welcomeMsg}}</p></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
-      <li ng-class="{ active: isActive('#/signup')}"><a href="#signup"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-      <li ng-class="{ active: isActive('/login')}"><a href="#login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-	  <li ng-class="{ active: isActive('/settings')}"><a href="#settings"><span class="glyphicon glyphicon-cog"></span>Settings</a></li>
-      <li ng-class="{ active: isActive('/switch')}"><a href="#switch"><span class="glyphicon glyphicon-cog"></span>Liquid access</a></li>
+      <li ng-if="!vm.isLoggedIn" ng-class="{ active: isActive('/signup')}"><a href="#signup"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+      <li ng-if="!vm.isLoggedIn" ng-class="{ active: isActive('/login')}"><a href="#login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      <li ng-if="vm.isLoggedIn" ng-class="{ active: isActive('/logout')}"><a href="#/" ng-click="vm.logout()"><span class="glyphicon glyphicon-cog"></span>Logout</a></li>
+	  <li ng-if="vm.isLoggedIn" ng-class="{ active: isActive('/settings')}"><a href="#settings"><span class="glyphicon glyphicon-cog"></span>Settings</a></li>
+      <li ng-if="vm.isLoggedIn"><a href="" ng-click="vm.showQRCode()"><span class="glyphicon glyphicon-cog"></span>Liquid access</a></li>
     </ul>
   </div>
 </nav>
+
+
+<script type="text/ng-template" id="showQRCode.html">
+  <div class="modal-header">
+    <h3 class="modal-title">Scan QR code to transfer to a different device</h3>
+    <hr class="colorgraph">
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-xs-12">
+        <form role="form">
+          <div class="form-group">
+            <input type="submit" value="Generate QR" class="btn btn-primary btn-block btn-lg" tabindex="7" ng-click="refreshCode()"></input>
+          </div>
+          <div class="form-group">
+            <qrcode version="20" error-correction-level="M" data="{{qrUrl}}" href="{{qrUrl}}"></qrcode>
+          </div>
+          <div class="form-group">
+            <p>{{qrUrl}}</p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" ng-click="close()">OK</button>
+  </div>
+</script>
+
+</div>

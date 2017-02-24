@@ -1,25 +1,38 @@
-var liquidApp = angular.module('liquidAccessApp', ['ngRoute', 'ngCookies']);
+var liquidApp = angular.module('liquidAccessApp', ['ngRoute', 'ngCookies', 'ui.bootstrap']);
 
 liquidApp.config(function($routeProvider) {
 	$routeProvider
 	.when("/", {
 		templateUrl: "app/home/home.html"
 	})
+	.when("/:?info=", {
+		templateUrl: "app/home/home.html"
+	})
 	.when("/signup", {
 		templateUrl: "app/signup/signup.html"
 	})
+	.when("/signup/:?info=", {
+		templateUrl: "app/signup/signup.html"
+	})
 	.when("/login", {
+		templateUrl: "app/login/login.html"
+	})
+	.when("/login/:?info=", {
 		templateUrl: "app/login/login.html"
 	})
 	.when("/settings", {
 		templateUrl: "app/settings/settings.html",
 		restricted: true
 	})
+	.when("/settings/:?info=", {
+		templateUrl: "app/settings/settings.html",
+		restricted: true
+	})
 	.when("/newsitem", {
 		templateUrl: "app/newsitem/newsitem.html"
 	})
-	.when("/switch", {
-		templateUrl: "app/switchdevice/switchInfo.html"
+	.when("/newsitem/:?info=", {
+		templateUrl: "app/newsitem/newsitem.html"
 	});
 	//.otherwise({ redirectTo: '/' });
 });
