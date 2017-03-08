@@ -8,6 +8,7 @@ angular.module('liquidAccessApp').factory('AuthService',
 
 
             function loadUserCredentials() {
+		console.log("In loadUserCredentials");
                 var token = window.localStorage.getItem(LOCAL_TOKEN_KEY);
                 if (token) {
                     SetAuthHeader(token);

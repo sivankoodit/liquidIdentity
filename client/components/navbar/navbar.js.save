@@ -3,13 +3,12 @@
  */
 var liquidApp = angular.module('liquidAccessApp');
 
-liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routeParams', '$location', '$rootScope', function(AuthService, $uibModal, $routeParams, $location, $rootScope) {
+liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routeParams', '$location', '$rootScope', '$scope', function(AuthService, $uibModal, $routeParams, $location, $rootScope, $scope) {
     var vm = this;
     this.switchInfo = $routeParams.info;
     this.isLoggedIn = false;
 
     this.formWelcomeMsg = function() {
-	console.log("In formWelcomeMsg");
 
     	// call register from service
         AuthService.getUserInfo()
@@ -21,13 +20,11 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
             })
             // handle error
             .catch(function (errResponse) {
-		console.log("Error in formWelcomeMsg: "+ errResponse);
                 vm.welcomeMsg = "Welcome! Login to access subscriber contents";
             });
     };
 
     this.trySwitching = function() {
-	console.log("In trySwitching");
 
         // call register from service
         AuthService.liquidAccess(this.switchInfo)
@@ -36,15 +33,13 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
                 console.log(response);
                 vm.welcomeMsg = "Hello " + response.user.firstname;
                 vm.isLoggedIn = true;
-		$location.url($location.path());
-		
+
             })
             // handle error
             .catch(function (errResponse) {
-		console.log("Error in trySwitching: "+ errResponse);
                 vm.welcomeMsg = "Welcome! Login to access subscriber contents";
             });
-        //$location.url($location.path());
+        $location.url($location.path());
 
     };
 
@@ -68,9 +63,9 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
 
 
     this.showQRCode = function (size) {
-        var currentUrl = $location.absUrl();
-        var token = AuthService.getAuthToken();
- 
+        $scope.currentUrl = $location.absUrl();
+        $scope.token = AuthService.getAuthToken();
+
         var modelScope = $rootScope.$new();
         var modalInstance = $uibModal.open({
             templateUrl: 'showQRCode.html',
@@ -79,10 +74,10 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
             size: size,
             resolve: {
                 currentUrl: function () {
-                    return currentUrl;
+                    return $scope.currentUrl;
                 },
                 currentToken: function () {
-                    return token;
+                    return $scope.token;
                 }
             }
         });
@@ -96,17 +91,14 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
 
 
     this.init = function() {
-	console.log("In navbar at: " + $location.path()); 
-	// User is switching from some other device
+        // User is switching from some other device
         if(this.switchInfo) {
             this.trySwitching();
-           
-        
-	
-        
-	} else{
-		this.formWelcomeMsg();
-	}
+        }
+        else {
+            this.formWelcomeMsg();
+        }
+        this.currentUrl = $location.absUrl();
     };
     this.init();
 }]);

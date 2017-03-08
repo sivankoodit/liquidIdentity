@@ -140,7 +140,7 @@ apiRoutes.get('/lqaccess/:id', function(req, res) {
             if (!user) {
                 return res.status(403).send({success: false, msg: 'Authentication failed. User not found.'});
             } else {
-                res.json({success: true, token: 'JWT ' + token, user: {firstname: user.firstname, lastname: user.lastname}, msg: 'Welcome to new device ' + user.name + '!'});
+                res.json({success: true, token: 'JWT ' + token, user: {firstname: user.firstname, lastname: user.lastname}, msg: 'Welcome to new device ' + user.firstname + '!'});
             }
         });
     } else {
@@ -183,7 +183,7 @@ app.use(function (req, res, next) {
 app.use('/api', apiRoutes);
 
 // Define the port to run on
-app.set('port', 8086);
+app.set('port', 8899);
 
 app.use(express.static('client'))
 
