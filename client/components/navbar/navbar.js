@@ -11,7 +11,7 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
     this.formWelcomeMsg = function() {
 	console.log("In formWelcomeMsg");
 
-    	// call register from service
+    	// Get the current logged in user
         AuthService.getUserInfo()
         // handle success
             .then(function (response) {
@@ -21,8 +21,9 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
             })
             // handle error
             .catch(function (errResponse) {
-		console.log("Error in formWelcomeMsg: "+ errResponse);
+		        console.log("Error in formWelcomeMsg: "+ errResponse);
                 vm.welcomeMsg = "Welcome! Login to access subscriber contents";
+                vm.isLoggedIn = false;
             });
     };
 
@@ -36,12 +37,12 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
                 console.log(response);
                 vm.welcomeMsg = "Hello " + response.user.firstname;
                 vm.isLoggedIn = true;
-		$location.url($location.path());
+		        $location.url($location.path());
 		
             })
             // handle error
             .catch(function (errResponse) {
-		console.log("Error in trySwitching: "+ errResponse);
+		        console.log("Error in trySwitching: "+ errResponse);
                 vm.welcomeMsg = "Welcome! Login to access subscriber contents";
             });
         //$location.url($location.path());
@@ -57,8 +58,7 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
         AuthService.logout()
         // handle success
             .then(function () {
-                vm.isLoggedIn = false;
-                vm.welcomeMsg = "Welcome! Login to access subscriber contents";
+                $location.path("/");
             })
             // handle error
             .catch(function () {
