@@ -3,33 +3,33 @@
 <div class="jumbotron text-center">
   <h1>More detailed report for subscribers</h1>
 </div>
-<div class="container">
+<div class="container" ng-controller="newsItemController as vm">
   <div class="row">
 	<div class="col-sm-12">
-	  <h3>Snow storm test</h3>
-	  <p>Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..</p>
-	  <p>Ut enim ad..</p>
+	  <h3>{{vm.newsItem.title}}</h3>
+	  <p>{{vm.newsItem.subtitle}}</p>
+	  <p>{{vm.newsItem.fullContent}}</p>
 	</div>	
   </div>
   <div class="row">
-	<div class="col-sm-12">
-	  <h3>Add your comment:</h3>
-	  <hr class="colorgraph">
-	  <form role="form">			
-			<div class="form-group">
-				<input type="text" class="form-control input-lg" placeholder="Your comment" tabindex="5" required>
-			</div>			
-			<div class="row">
-				<div class="col-xs-6 col-md-2 col-md-offset-8"><input type="submit" value="Submit" class="btn btn-primary btn-block btn-lg" tabindex="7"></div>
-				<div class="col-xs-6 col-md-2"><a href="#" class="btn btn-success btn-block btn-lg">Cancel</a></div>
-			</div>
-		</form>
-	</div>
-	  <div class="col-sm-12">
+		<div class="col-sm-12">
+		  <h3>Add your comment:</h3>
 		  <hr class="colorgraph">
-		  <h3>User1:</h3>
-		  <p>m ipsum dolor..Lorem ipsum dolor..Lorem ipsum ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..Lorem ipsum dolor..</p>
-		  <p>Ut enim ad..</p>
+		  <form role="form">
+				<div class="form-group">
+					<input type="text" class="form-control input-lg" placeholder="Your comment" tabindex="5" required ng-model="vm.commentText">
+				</div>
+				<div class="row">
+					<div class="col-xs-6 col-md-2 col-md-offset-8"><input type="submit" value="Submit" class="btn btn-primary btn-block btn-lg" tabindex="7" ng-click="vm.addComment()"></div>
+					<div class="col-xs-6 col-md-2"><a href="#" class="btn btn-success btn-block btn-lg">Cancel</a></div>
+				</div>
+			</form>
+		</div>
+	  <div class="col-sm-12" ng-repeat="comment in vm.newsItem.comments">
+		  <hr class="colorgraph">
+		  <h3>{{comment.userEmail}}:</h3>
+		  <p>{{comment.text}}</p>
+		  <p>{{comment.createdAt}}</p>
 	  </div>
   </div>
 </div>

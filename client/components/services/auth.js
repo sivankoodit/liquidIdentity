@@ -49,7 +49,8 @@ angular.module('liquidAccessApp').factory('AuthService',
                 register: register,
                 getAuthToken: getAuthToken,
                 getCurrentUser: getCurrentUser,
-                liquidAccess: liquidAccess
+                liquidAccess: liquidAccess,
+                getTransferCode: getTransferCode
             });
 
 
@@ -63,6 +64,29 @@ angular.module('liquidAccessApp').factory('AuthService',
                 var deferred = $q.defer();
 
                 $http.get('/api/memberinfo')
+                // handle success
+                    .success(function (data) {
+                        if(data.success){
+                            deferred.resolve(data);
+                        } else {
+                            currentUser = null;
+                            deferred.reject();
+                        }
+                    })
+                    // handle error
+                    .error(function (data) {
+                        currentUser = null;
+                        deferred.reject();
+                    });
+                return deferred.promise;
+            }
+
+            function getTransferCode() {
+
+                // create a new instance of deferred
+                var deferred = $q.defer();
+
+                $http.get('/api/transfercode')
                 // handle success
                     .success(function (data) {
                         if(data.success){
@@ -162,12 +186,12 @@ angular.module('liquidAccessApp').factory('AuthService',
 
             }
 
-            function liquidAccess(token) {
+            function liquidAccess(code) {
 
                 // create a new instance of deferred
                 var deferred = $q.defer();
 
-                $http.get('/api/lqaccess/' + token)
+                $http.get('/api/lqaccess/' + code)
                 // handle success
                     .success(function (data) {
                         if(data && data.success && data.token){

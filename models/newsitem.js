@@ -19,7 +19,7 @@ var CommentsSchema = new Schema({
         required: true
     },
     createdAt: {
-        type: String,
+        type: Date,
         required: true
     }
 });
@@ -32,7 +32,7 @@ var NewsItemSchema = new Schema({
         required: true
     },
     createdAt: {
-        type: String,
+        type: Date,
         required: true
     },
     subtitle: {

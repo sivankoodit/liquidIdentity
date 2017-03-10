@@ -58,6 +58,8 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
         AuthService.logout()
         // handle success
             .then(function () {
+                vm.welcomeMsg = "Welcome! Login to access subscriber contents";
+                vm.isLoggedIn = false;
                 $location.path("/");
             })
             // handle error
@@ -66,8 +68,49 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
             });
     };
 
+    this.showQRCode = function(size) {
 
-    this.showQRCode = function (size) {
+        var currentUrl = $location.absUrl();
+        var tCode = "";
+        // Get the current logged in user
+        AuthService.getTransferCode()
+        // handle success
+            .then(function (response) {
+                console.log(response);
+                tCode = response.code;
+                console.log("Code" + tCode)
+
+                var modelScope = $rootScope.$new();
+                var modalInstance = $uibModal.open({
+                    templateUrl: 'showQRCode.html',
+                    controller: 'showQRCodeCtrl',
+                    scope: modelScope,
+                    size: size,
+                    resolve: {
+                        currentUrl: function () {
+                            return currentUrl;
+                        },
+                        currentToken: function () {
+                            return tCode;
+                        }
+                    }
+                });
+
+                modalInstance.result.then(function () {
+                    // do nothing
+                }, function () {
+                    // do nothing
+                });
+
+            })
+            // handle error
+            .catch(function (errResponse) {
+                console.log("Error getting transfer code: "+ errResponse);
+            });
+    };
+
+
+    this.showQRCode1 = function (size) {
         var currentUrl = $location.absUrl();
         var token = AuthService.getAuthToken();
  
@@ -116,7 +159,7 @@ liquidApp.controller('showQRCodeCtrl', function( $scope, $modalInstance, current
 
     $scope.refreshCode = function()  {
         // call register from service
-        var onlyToken = currentToken.substr(4);
+        var onlyToken = currentToken;
         $scope.qrUrl = currentUrl + "?info=" + onlyToken;
     };
 

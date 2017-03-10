@@ -135,7 +135,7 @@ apiRoutes.get('/lqaccess/:id', function(req, res) {
                 var issuedAt = moment(transferInfo.createdAt);
                 var currentTime = moment();
                 console.log('issued: ' + issuedAt.format('LTS') + "  current: " + currentTime.format('LTS'));
-                if(currentTime.diff(issuedAt, 'seconds') > 30) //30 seconds
+                if(currentTime.diff(issuedAt, 'seconds') > 60) //30 seconds
                     return res.status(403).send({success: false, msg: 'Token expired. Try generating it again'});
                 else {
                     var decoded = jwt.decode(transferInfo.token, config.secret);
@@ -153,6 +153,7 @@ apiRoutes.get('/lqaccess/:id', function(req, res) {
                             res.json({
                                 success: true,
                                 user: {firstname: user.firstname, lastname: user.lastname},
+                                token: "JWT " + transferInfo.token,
                                 msg: 'Welcome to new device  ' + user.firstname + '!'
                             });
                         }

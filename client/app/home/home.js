@@ -3,16 +3,34 @@
  */
 var liquidApp = angular.module('liquidAccessApp');
 
-liquidApp.controller('homeController', ['$scope', '$window', 'AuthService', '$location', function($scope, $window, AuthService, $location) {
+liquidApp.controller('homeController', ['$scope', '$window', 'AuthService', 'NewsService', '$location', function($scope, $window, AuthService, NewsService, $location) {
     var vm = this;
+    this.news = undefined;
 
-    this.isLoggedIn = function() {
+
+
+    var getHeadLines = function() {
+        NewsService.getHeadlines()
+        // handle success
+            .then(function (response) {
+                console.log(response);
+                vm.news = response.news;
+            })
+            // handle error
+            .catch(function (errResponse) {
+                console.log("Error getting headlines: "+ errResponse);
+            });
+    };
+    getHeadLines();
+
+    this.showDetailedNews = function(title) {
 
         var user = AuthService.getCurrentUser();
         // call register from service
         if(user)
         {
-            $location.path("/newsitem");
+            NewsService.setCurrentItem(title);
+            $location.path("/newsitem/");
         }
         else
         {

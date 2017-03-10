@@ -113,7 +113,7 @@ getToken = function (headers) {
 };
 
 newsRoutes.get('/headlines', function(req, res) {
-        NewsItem.find().sort({'createdAt' : 'asc'}).select('-fullContent').select('-comments').exec(function(err, news) {
+        NewsItem.find().sort('-createdAt').select('-fullContent').select('-comments').exec(function(err, news) {
             if (err) throw err;
             if (!news) {
                 return res.status(403).send({success: false, msg: 'No news content found'});
