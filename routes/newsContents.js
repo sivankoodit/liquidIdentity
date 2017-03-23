@@ -6,8 +6,7 @@ var express     = require('express');
 var config      = require('../config/database'); // get db config file
 var NewsItem    = require('../models/newsitem'); // get the mongoose model
 var User    = require('../models/user'); // get the mongoose model
-
-var jwt         = require('jwt-simple');
+var auth = require('../config/auth');
 
 
 // bundle our routes
@@ -79,38 +78,16 @@ processAddCommentReq = function(req, res, userEmail) {
 };
 
 validateAccessAndExec = function(req, res, processRequest) {
-    var token = getToken(req.headers);
-    var userEmail = undefined;
-    if (token) {
-        var decoded = jwt.decode(token, config.secret);
-        User.findOne({
-            email: decoded.email
-        }, function(err, user) {
-            if (err) throw err;
-
-            if (!user) {
-                return res.status(403).send({success: false, msg: 'User not logged in'});
-            } else {
-                processRequest(req, res, user.email);
-            }
-        });
-    } else {
-        return res.status(403).send({success: false, msg: 'Unauthorized access'});
-    }
-};
-
-getToken = function (headers) {
-    if (headers && headers.authorization) {
-        var parted = headers.authorization.split(' ');
-        if (parted.length === 2) {
-            return parted[1];
+    auth.isValidSession(req.headers.authorization, function(err, user) {
+        if (err) throw err;
+        if (!user) {
+            return res.status(403).send({success: false, msg: 'Authentication failed. No valid session found.'});
         } else {
-            return null;
+            processRequest(req, res, user.email);
         }
-    } else {
-        return null;
-    }
+    });
 };
+
 
 newsRoutes.get('/headlines', function(req, res) {
         NewsItem.find().sort('-createdAt').select('-fullContent').select('-comments').exec(function(err, news) {

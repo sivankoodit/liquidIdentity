@@ -7,12 +7,15 @@
 			</div>	
 <div class="row">
     <div class="col-xs-12 col-md-6 col-md-offset-3">
-		<form role="form">			
+		<form role="form">
 			<div class="form-group">
-				<input type="email" class="form-control input-lg" placeholder="Email address" tabindex="4" required ng-model="vm.email">
+				<input type="email" class="form-control input-lg" name="uEmail" placeholder="Email address" tabindex="4" ng-required="true" ng-model="vm.email">
+				<div ng-show="form.$submitted || form.uName.$touched">
+					<div ng-show="form.uEmail.$error.required">Email is required to login</div>
+				</div>
 			</div>
 			<div class="form-group">
-				<input type="password" class="form-control input-lg" placeholder="Password" tabindex="5" required ng-model="vm.password">
+				<input type="password" class="form-control input-lg" placeholder="Password" tabindex="5" ng-required="true" ng-model="vm.password">
 			</div>			
 			<hr class="colorgraph">
 			<div class="row">

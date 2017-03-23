@@ -8,6 +8,34 @@ var bcrypt = require('bcrypt');
 // Thanks to http://blog.matoski.com/articles/jwt-express-node-mongoose/
 
 // set up a mongoose model
+var SessionSchema = new Schema({
+    id: {
+        type: String,
+        unique: true,
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        required: true
+    }
+});
+
+
+// set up a mongoose model
+var TransferInfoSchema = new Schema({
+    transferCode: {
+        type: String,
+        unique: true,
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        required: true
+    }
+});
+
+
+// set up a mongoose model
 var UserSchema = new Schema({
     email: {
         type: String,
@@ -25,7 +53,9 @@ var UserSchema = new Schema({
     password: {
         type: String,
         required: true
-    }
+    },
+    sessions: [SessionSchema],
+    transfers: [TransferInfoSchema]
 });
 
 UserSchema.pre('save', function (next) {

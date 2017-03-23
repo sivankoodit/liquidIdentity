@@ -1,5 +1,5 @@
 /**
- * Created by siva on 09/03/2017.
+ * Created by siva on 16/03/2017.
  */
 /**
  * Created by siva on 24/02/2017.
@@ -10,23 +10,21 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-// Thanks to http://blog.matoski.com/articles/jwt-express-node-mongoose/
-
 // set up a mongoose model
-var TransferInfoSchema = new Schema({
-    transferCode: {
+var SessionSchema = new Schema({
+    id: {
         type: String,
         unique: true,
-        required: true
-    },
-    sessionId: {
-        type: String,
         required: true
     },
     createdAt: {
         type: Date,
         required: true
+    },
+    createdFor: {
+        type: String,
+        required: false
     }
 });
 
-module.exports = mongoose.model('TransferInfo', TransferInfoSchema);
+module.exports = mongoose.model('Session', SessionSchema);

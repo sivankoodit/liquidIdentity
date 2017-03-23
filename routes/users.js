@@ -4,11 +4,10 @@
 
 var express = require('express');
 var config      = require('../config/database'); // get db config file
-
+var auth = require('../config/auth');
 var User        = require('../models/user'); // get the mongoose model
-var TransferInfo = require('../models/transferInfo');
-var jwt         = require('jwt-simple');
 var moment  = require('moment');
+
 
 
 // bundle our routes
@@ -40,25 +39,12 @@ apiRoutes.post('/signup', function(req, res) {
 
 // route to authenticate a user (POST http://localhost:8080/api/authenticate)
 apiRoutes.post('/authenticate', function(req, res) {
-    User.findOne({
-        email: req.body.email
-    }, function(err, user) {
+    auth.authenticate(req.body.email, req.body.password, function(err, userInfo) {
         if (err) throw err;
-
-        if (!user) {
+        if (!userInfo) {
             res.send({success: false, msg: 'Authentication failed. User not found.'});
         } else {
-            // check if password matches
-            user.comparePassword(req.body.password, function (err, isMatch) {
-                if (isMatch && !err) {
-                    // if user is found and password is right create a token
-                    var token = jwt.encode(user, config.secret);
-                    // return the information including token as JSON
-                    res.json({success: true, token: 'JWT ' + token, user: {firstname: user.firstname, lastname: user.lastname}});
-                } else {
-                    res.send({success: false, msg: 'Authentication failed. Wrong password.'});
-                }
-            });
+            res.send({success: true, token: userInfo.sessionId, user: {name: userInfo.name}, msg: 'Authentication succeeded'});
         }
     });
 });
@@ -66,18 +52,13 @@ apiRoutes.post('/authenticate', function(req, res) {
 
 // route to a restricted info (GET http://localhost:8080/api/memberinfo)
 apiRoutes.get('/memberinfo', function(req, res) {
-    var token = getToken(req.headers);
-    if (token) {
-        var decoded = jwt.decode(token, config.secret);
-        User.findOne({
-            email: decoded.email
-        }, function(err, user) {
+    if (req.headers && req.headers.authorization) {
+        auth.isValidSession(req.headers.authorization, function(err, user) {
             if (err) throw err;
-
             if (!user) {
-                return res.status(403).send({success: false, msg: 'Authentication failed. User not found.'});
+                return res.status(403).send({success: false, msg: 'Authentication failed. No valid session found.'});
             } else {
-                res.json({success: true, user: {firstname: user.firstname, lastname: user.lastname}, msg: 'Logged in user ' + user.firstname + '!'});
+                res.json({success: true, user: {name: user.firstname + ' ' + user.lastname}, msg: 'Valid session found'});
             }
         });
     } else {
@@ -87,25 +68,19 @@ apiRoutes.get('/memberinfo', function(req, res) {
 
 // route to a restricted info (GET http://localhost:8080/api/memberinfo)
 apiRoutes.get('/transfercode', function(req, res) {
-    var token = getToken(req.headers);
-    if (token) {
-        var decoded = jwt.decode(token, config.secret);
-        User.findOne({
-            email: decoded.email
-        }, function(err, user) {
+    if (req.headers && req.headers.authorization) {
+        auth.isValidSession(req.headers.authorization, function(err, user) {
             if (err) throw err;
-
             if (!user) {
-                return res.status(403).send({success: false, msg: 'Authentication failed. User not found.'});
+                return res.status(403).send({success: false, msg: 'No valid session.'});
             } else {
                 var transferCode = generateTransferCode(12);
-                var newTransferInfo = new TransferInfo({
+                user.transfers.push({
                     transferCode: transferCode,
-                    token: token,
                     createdAt: new Date()
                 });
 
-                newTransferInfo.save(function(err) {
+                user.save(function(err) {
                     if (err) {
                         return res.json({success: false, msg: 'Error generating code'});
                     } else {
@@ -124,43 +99,39 @@ apiRoutes.get('/lqaccess/:id', function(req, res) {
     var code = req.params.id;
     console.log(req.params.id);
     if (code) {
-        TransferInfo.findOne({
-            transferCode: code
-        }, function(err, transferInfo) {
-            if (err) throw err;
+        User.findOne({'transfers.transferCode' : code}, function(err, user){
+                if(err) throw err;
 
-            if (!transferInfo) {
-                return res.status(403).send({success: false, msg: 'Authentication failed. Try generating the code again to swtich'});
-            } else {
-                var issuedAt = moment(transferInfo.createdAt);
-                var currentTime = moment();
-                console.log('issued: ' + issuedAt.format('LTS') + "  current: " + currentTime.format('LTS'));
-                if(currentTime.diff(issuedAt, 'seconds') > 60) //30 seconds
-                    return res.status(403).send({success: false, msg: 'Token expired. Try generating it again'});
-                else {
-                    var decoded = jwt.decode(transferInfo.token, config.secret);
-                    User.findOne({
-                        email: decoded.email
-                    }, function (err, user) {
-                        if (err) throw err;
-
-                        if (!user) {
-                            return res.status(403).send({
-                                success: false,
-                                msg: 'Authentication failed. User not found.'
-                            });
-                        } else {
-                            res.json({
-                                success: true,
-                                user: {firstname: user.firstname, lastname: user.lastname},
-                                token: "JWT " + transferInfo.token,
-                                msg: 'Welcome to new device  ' + user.firstname + '!'
-                            });
-                        }
-                    });
+                if(!user){
+                    return res.status(403).send({success: false, msg: 'Authentication failed. Try generating the code again to swtich'});
+                } else {
+                    var transferObj = user.transfers.filter(function ( obj ) {
+                        return obj.transferCode === code;
+                    })[0];
+                    var issuedAt = moment(transferObj.createdAt);
+                    var currentTime = moment();
+                    console.log('issued: ' + issuedAt.format('LTS') + "  current: " + currentTime.format('LTS'));
+                    if(currentTime.diff(issuedAt, 'seconds') > 60) {
+                        //user.transfers[0].remove();
+                        return res.status(403).send({success: false, msg: 'Token expired. Try generating it again'});
+                    } else {
+                        var newSessionId = generateTransferCode(16);
+                            user.sessions.push({
+                            id: newSessionId,
+                            createdAt: new Date(),
+                            createdFor: user.email
+                        });
+                        user.save(function(err){
+                            if(err) {
+                                res.json({success: false, msg: 'Failed to create a session'});
+                            } else {
+                                res.json({success: true, token: newSessionId, user: {name: user.firstname + ' ' + user.lastname}, msg: 'New session created for a new device'});
+                            }
+                        });
+                    }
                 }
-            }
-        });
+
+            });
     } else {
         return res.status(403).send({success: false, msg: 'No token provided.'});
     }

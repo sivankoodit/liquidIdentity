@@ -16,7 +16,7 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
         // handle success
             .then(function (response) {
                 console.log(response);
-                vm.welcomeMsg = "Hello " + response.user.firstname;
+                vm.welcomeMsg = "Hello " + response.user.name;
                 vm.isLoggedIn = true;
             })
             // handle error
@@ -35,7 +35,7 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
         // handle success
             .then(function (response) {
                 console.log(response);
-                vm.welcomeMsg = "Hello " + response.user.firstname;
+                vm.welcomeMsg = "Hello " + response.user.name;
                 vm.isLoggedIn = true;
 		        $location.url($location.path());
 		
@@ -157,10 +157,12 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
 
 liquidApp.controller('showQRCodeCtrl', function( $scope, $modalInstance, currentUrl, currentToken ){
 
+    $scope.qrUrl = currentUrl + "?info=" + currentToken;
+
     $scope.refreshCode = function()  {
         // call register from service
         var onlyToken = currentToken;
-        $scope.qrUrl = currentUrl + "?info=" + onlyToken;
+        $scope.qrUrl = currentUrl + "?info=" + currentToken;
     };
 
     $scope.close = function() {
