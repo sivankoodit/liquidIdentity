@@ -76,4 +76,5 @@ generateRandomCode = function(length)
 };
 
 exports.authenticate = authenticate;
+exports.addNewUser = addNewUser;
 exports.isValidSession = isValidSession;

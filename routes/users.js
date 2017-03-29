@@ -24,14 +24,19 @@ apiRoutes.post('/signup', function(req, res) {
             password: req.body.password,
             email: req.body.email
         });
+
+        var newSessionId = generateRandomCode(16);
+        newUser.sessions.push({
+            id: newSessionId,
+            createdAt: new Date(),
+        });
         // save the user
         newUser.save(function(err) {
             if (err) {
                 return res.json({success: false, msg: 'Email already registered.'});
             } else {
                 // if user is created, create a token
-                var token = jwt.encode(newUser, config.secret);
-                res.json({success: true, token: 'JWT ' + token, user: {firstname: newUser.firstname, lastname: newUser.lastname}, msg: 'Added as a member'});
+                res.json({success: true, token: newSessionId, user: {firstname: newUser.firstname, lastname: newUser.lastname}, msg: 'Added as a member'});
             }
         });
     }
@@ -74,7 +79,7 @@ apiRoutes.get('/transfercode', function(req, res) {
             if (!user) {
                 return res.status(403).send({success: false, msg: 'No valid session.'});
             } else {
-                var transferCode = generateTransferCode(12);
+                var transferCode = generateRandomCode(12);
                 user.transfers.push({
                     transferCode: transferCode,
                     createdAt: new Date()
@@ -115,11 +120,10 @@ apiRoutes.get('/lqaccess/:id', function(req, res) {
                         //user.transfers[0].remove();
                         return res.status(403).send({success: false, msg: 'Token expired. Try generating it again'});
                     } else {
-                        var newSessionId = generateTransferCode(16);
+                        var newSessionId = generateRandomCode(16);
                             user.sessions.push({
                             id: newSessionId,
                             createdAt: new Date(),
-                            createdFor: user.email
                         });
                         user.save(function(err){
                             if(err) {
@@ -150,7 +154,7 @@ getToken = function (headers) {
     }
 };
 
-generateTransferCode = function(length)
+generateRandomCode = function(length)
 {
     var charSet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
     var code = "";
