@@ -3,8 +3,8 @@
  */
 
 angular.module('liquidAccessApp').factory('NewsService',
-    ['$q', '$timeout', '$http',
-        function ($q, $timeout, $http) {
+    ['$q', '$timeout', '$http', '$cookies',
+        function ($q, $timeout, $http, $cookies) {
 
             var CURRENT_TITLE = "currentTitle";
             var LOCAL_TOKEN_KEY = 'yourTokenKey';
@@ -23,12 +23,16 @@ angular.module('liquidAccessApp').factory('NewsService',
 
             function setCurrentItem(title) {
                 currentTitle = title;
-                window.localStorage.setItem(CURRENT_TITLE, title);
+                //window.localStorage.setItem(CURRENT_TITLE, title);
+                $cookies.put('currentTitle', title);
+                if(!$cookies.get('test'))
+                    $cookies.put('test', 'testConstantCookie');
+
             };
 
-            function getCurrentItem(title) {
-                if(!currentTitle)
-                    currentTitle = window.localStorage.getItem(CURRENT_TITLE);
+            function getCurrentItem() {
+                console.log($cookies.getAll());
+                    currentTitle = $cookies.get('currentTitle'); //currentTitle = window.localStorage.getItem(CURRENT_TITLE);
                 return currentTitle;
             };
 

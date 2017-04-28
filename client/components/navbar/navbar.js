@@ -3,7 +3,7 @@
  */
 var liquidApp = angular.module('liquidAccessApp');
 
-liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routeParams', '$location', '$rootScope', function(AuthService, $uibModal, $routeParams, $location, $rootScope) {
+liquidApp.controller('navBarController', ['AuthService', 'uiSyncService', '$uibModal', '$routeParams', '$location', '$rootScope', function(AuthService, uiSyncService, $uibModal, $routeParams, $location, $rootScope) {
     var vm = this;
     this.switchInfo = $routeParams.info;
     this.isLoggedIn = false;
@@ -22,7 +22,7 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
             // handle error
             .catch(function (errResponse) {
 		        console.log("Error in formWelcomeMsg: "+ errResponse);
-                vm.welcomeMsg = "Welcome! Login to access subscriber contents";
+                vm.welcomeMsg = "Login or subscribe to get exciting news";
                 vm.isLoggedIn = false;
             });
     };
@@ -43,7 +43,7 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
             // handle error
             .catch(function (errResponse) {
 		        console.log("Error in trySwitching: "+ errResponse);
-                vm.welcomeMsg = "Welcome! Login to access subscriber contents";
+                vm.welcomeMsg = "Login or subscribe to get exciting news";
             });
         //$location.url($location.path());
 
@@ -58,7 +58,7 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
         AuthService.logout()
         // handle success
             .then(function () {
-                vm.welcomeMsg = "Welcome! Login to access subscriber contents";
+                vm.welcomeMsg = "Login or subscribe to get exciting news";
                 vm.isLoggedIn = false;
                 $location.path("/");
             })
@@ -69,6 +69,8 @@ liquidApp.controller('navBarController', ['AuthService', '$uibModal', '$routePar
     };
 
     this.showQRCode = function(size) {
+
+        console.log(uiSyncService.getElemInView());
 
         var currentUrl = $location.absUrl();
         var tCode = "";

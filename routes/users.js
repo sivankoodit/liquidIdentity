@@ -75,6 +75,10 @@ apiRoutes.get('/memberinfo', function(req, res) {
 apiRoutes.get('/transfercode', function(req, res) {
     if (req.headers && req.headers.authorization) {
         auth.isValidSession(req.headers.authorization, function(err, user) {
+            console.log(req.headers.cookie);
+            console.log(req.cookies);
+
+
             if (err) throw err;
             if (!user) {
                 return res.status(403).send({success: false, msg: 'No valid session.'});
@@ -82,7 +86,8 @@ apiRoutes.get('/transfercode', function(req, res) {
                 var transferCode = generateRandomCode(12);
                 user.transfers.push({
                     transferCode: transferCode,
-                    createdAt: new Date()
+                    createdAt: new Date(),
+                    data: req.headers.cookie
                 });
 
                 user.save(function(err) {
@@ -129,6 +134,12 @@ apiRoutes.get('/lqaccess/:id', function(req, res) {
                             if(err) {
                                 res.json({success: false, msg: 'Failed to create a session'});
                             } else {
+                                var arrayOfCookies = transferObj.data.split(';');
+                                arrayOfCookies.forEach(function(cookie){
+                                    var keyValuePair = cookie.split('=');
+                                    res.cookie(keyValuePair[0], keyValuePair[1]);
+                                });
+
                                 res.json({success: true, token: newSessionId, user: {name: user.firstname + ' ' + user.lastname}, msg: 'New session created for a new device'});
                             }
                         });

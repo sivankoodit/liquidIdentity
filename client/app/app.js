@@ -36,3 +36,16 @@ liquidApp.config(function($routeProvider) {
 	});
 	//.otherwise({ redirectTo: '/' });
 });
+
+
+liquidApp.directive('scrollIf', ['uiSyncService', function (uiSyncService) {
+    return function (scope, element, attributes) {
+        setTimeout(function () {
+            if (scope.$eval(attributes.scrollIf)) {
+            	if(attributes["id"] === uiSyncService.getElemInView()) {
+                    window.scrollTo(0, element[0].offsetTop - 100)
+                }
+            }
+        });
+    }
+}]);

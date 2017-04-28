@@ -1,33 +1,35 @@
 <div ng-include='"components/navbar/navbar.html"'></div>
 
 <div class="container" ng-app="liquidAccessApp" ng-controller="loginController as vm">
-<div class="jumbotron">
+	<div class="jumbotron">
 			<h2>Login <small> to access the content!</small></h2>
 			<hr class="colorgraph">
 			</div>	
-<div class="row">
-    <div class="col-xs-12 col-md-6 col-md-offset-3">
-		<form role="form">
-			<div class="form-group">
-				<input type="email" class="form-control input-lg" name="uEmail" placeholder="Email address" tabindex="4" ng-required="true" ng-model="vm.email">
-				<div ng-show="form.$submitted || form.uName.$touched">
-					<div ng-show="form.uEmail.$error.required">Email is required to login</div>
+	<div class="row">
+		<div class="col-xs-12 col-md-6 col-md-offset-3">
+			<div class="fb-login-button" data-max-rows="1" data-size="xlarge" data-show-faces="false" data-auto-logout-link="true"></div>
+			<form role="form">
+				<div class="form-group">
+					<input type="email" class="form-control input-lg" name="uEmail" placeholder="Email address" tabindex="4" ng-required="true" ng-model="vm.email">
+					<div ng-show="form.$submitted || form.uName.$touched">
+						<div ng-show="form.uEmail.$error.required">Email is required to login</div>
+					</div>
 				</div>
-			</div>
-			<div class="form-group">
-				<input type="password" class="form-control input-lg" placeholder="Password" tabindex="5" ng-required="true" ng-model="vm.password">
-			</div>			
-			<hr class="colorgraph">
-			<div class="row">
-				<div class="col-xs-12 col-md-5">
-					<input type="submit" value="Log in" class="btn btn-primary btn-block btn-lg" tabindex="7" ng-click="vm.login()"  ng-disabled="disabled">
+				<div class="form-group">
+					<input type="password" class="form-control input-lg" placeholder="Password" tabindex="5" ng-required="true" ng-model="vm.password">
 				</div>
-            	<div class="col-xs-12 col-md-2"><img ng-if="vm.dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" /></div>
-				<div class="col-xs-12 col-md-5"><a href="#/" class="btn btn-success btn-block btn-lg">Cancel</a></div>
-				{{vm.currentUser}}
-			</div>
-		</form>
-		<div ng-show="vm.error" class="alert alert-danger">{{vm.errorMessage}}</div>
+				<hr class="colorgraph">
+				<div class="row">
+					<div class="col-xs-12 col-md-5">
+						<input type="submit" value="Log in" class="btn btn-primary btn-block btn-lg" tabindex="7" ng-click="vm.login()"  ng-disabled="disabled">
+					</div>
+					<div class="col-xs-12 col-md-2"><img ng-if="vm.dataLoading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" /></div>
+					<div class="col-xs-12 col-md-5"><a href="#/" class="btn btn-success btn-block btn-lg">Cancel</a></div>
+				</div>
+			</form>
+			<div ng-show="vm.error" class="alert alert-danger">{{vm.errorMessage}}</div>
+		</div>
 	</div>
-</div>
+
+
 </div>

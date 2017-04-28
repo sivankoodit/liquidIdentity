@@ -17,6 +17,9 @@ var SessionSchema = new Schema({
     createdAt: {
         type: Date,
         required: true
+    },
+    lastAccessedPage: {
+        type: String
     }
 });
 
@@ -31,6 +34,9 @@ var TransferInfoSchema = new Schema({
     createdAt: {
         type: Date,
         required: true
+    },
+    data: {
+        type: String
     }
 });
 
