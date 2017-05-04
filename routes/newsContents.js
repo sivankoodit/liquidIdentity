@@ -51,7 +51,7 @@ processAddCommentReq = function(req, res, userEmail) {
         res.json({success: false, msg: 'Please pass title of the news item and comment'});
     } else {
         NewsItem.findOne({title: req.body.newsTitle}).exec(function(err, newsItem) {
-            if(err) {
+            if(err || !newsItem) {
                 console.log("Error adding news item: " + err);
                 return res.json({success: false, msg: 'The news item cannot be found'});
             } else {

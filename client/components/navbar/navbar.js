@@ -37,6 +37,7 @@ liquidApp.controller('navBarController', ['AuthService', 'uiSyncService', '$uibM
                 console.log(response);
                 vm.welcomeMsg = "Hello " + response.user.name;
                 vm.isLoggedIn = true;
+                uiSyncService.reReadElemInView();
 		        $location.url($location.path());
 		
             })

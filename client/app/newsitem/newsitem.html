@@ -5,7 +5,7 @@
 </div>
 <div class="container" ng-controller="newsItemController as vm">
   <div class="row">
-	<div class="col-sm-12" id="newscontent" ng-mouseenter="vm.recordPosition($event)" scroll-if="true">
+	<div class="col-sm-12" id="newscontent" ng-click="vm.recordPosition($event)" scroll-if="true">
 	  <h3>{{vm.newsItem.title}}</h3>
 	  <p>{{vm.newsItem.subtitle}}</p>
 	  <p>{{vm.newsItem.fullContent}}</p>
@@ -25,7 +25,7 @@
 				</div>
 			</form>
 		</div>
-	  <div class="col-sm-12" ng-repeat="comment in vm.newsItem.comments" id="{{'comm' + $index}}" ng-mouseenter="vm.recordPosition($event)" scroll-if="true">
+	  <div class="col-sm-12" ng-repeat="comment in vm.newsItem.comments" id="{{'comm' + $index}}" ng-click="vm.recordPosition($event)" scroll-if="true">
 		  <hr class="colorgraph">
 		  <h3>{{comment.userEmail}}:</h3>
 		  <p>{{comment.text}}</p>

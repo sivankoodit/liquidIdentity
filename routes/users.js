@@ -137,7 +137,7 @@ apiRoutes.get('/lqaccess/:id', function(req, res) {
                                 var arrayOfCookies = transferObj.data.split(';');
                                 arrayOfCookies.forEach(function(cookie){
                                     var keyValuePair = cookie.split('=');
-                                    res.cookie(keyValuePair[0], keyValuePair[1]);
+                                    res.cookie(keyValuePair[0], decodeURI(keyValuePair[1]));
                                 });
 
                                 res.json({success: true, token: newSessionId, user: {name: user.firstname + ' ' + user.lastname}, msg: 'New session created for a new device'});

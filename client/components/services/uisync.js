@@ -10,8 +10,13 @@ angular.module('liquidAccessApp').factory('uiSyncService', ['$cookies', function
     var currentElemInView = null;
     return({
         getElemInView: getElemInView,
-        setElemInView: setElemInView
+        setElemInView: setElemInView,
+        reReadElemInView: reReadElemInView
     });
+
+    function reReadElemInView(){
+            currentElemInView = $cookies.get('currentElem'); //currentTitle = window.localStorage.getItem(CURRENT_TITLE);
+    };
 
     function getElemInView(){
         if(!currentElemInView) {

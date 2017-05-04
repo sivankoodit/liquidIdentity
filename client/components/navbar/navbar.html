@@ -1,52 +1,51 @@
-<div ng-controller="navBarController as vm">
-
+<div class="container" ng-controller="navBarController as vm">
+  <div class="row">
   <link ng-if="vm.isLoggedIn" rel="stylesheet" href="/components/navbar/navbar.css">
 
-
-  <nav role="navigation" class="navbar navbar-default navbar-fixed-top">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" data-toggle="collapse" data-target=".navbar-collapse" class="navbar-toggle">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#/">Weather news</a>
-    </div>
-    <div class="collapse navbar-collapse navbar-inner">
-      <ul class="nav navbar-nav">
-          <li><a href="#/">Home</a></li>
+    <nav role="navigation" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" data-toggle="collapse" data-target=".navbar-collapse" class="navbar-toggle">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#/">Weather news</a>
+      </div>
+      <div class="collapse navbar-collapse navbar-inner">
+        <ul class="nav navbar-nav">
+            <li><a href="#/">Home</a></li>
+        </ul>
+        <ul class="nav nav-center">
+          <li class="navbar-text" ng-class="{'nav-anim-slide': !vm.isLoggedIn}">{{vm.welcomeMsg}}</li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li ng-if="!vm.isLoggedIn" ><a href="#signup"><span class="glyphicon glyphicon-user"></span> Signup</a></li>
+          <li ng-if="!vm.isLoggedIn" ><a href="#login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+          <li ng-if="vm.isLoggedIn" class="dropdown pull-right">
+            <a href="" data-toggle="dropdown" class="dropdown-toggle">
+              <span class="glyphicon glyphicon-user">
+              <b class="caret"></b>
+                </span>
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a href="#settings" title="settings">Settings</a>
+              </li>
+              <li>
+                <a href="" title="getqrcode" ng-click="vm.showQRCode()">Liquid access</a>
+              </li>
+              <li>
+                <a href="" title="logout" ng-click="vm.logout()">Logout</a>
+              </li>
+            </ul>
+          </li>
       </ul>
-      <ul class="nav nav-center">
-        <li class="navbar-text" ng-class="{'nav-anim-slide': !vm.isLoggedIn}">{{vm.welcomeMsg}}</li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li ng-if="!vm.isLoggedIn" ><a href="#signup"><span class="glyphicon glyphicon-user"></span> Signup</a></li>
-        <li ng-if="!vm.isLoggedIn" ><a href="#login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-        <li ng-if="vm.isLoggedIn" class="dropdown pull-right">
-          <a href="" data-toggle="dropdown" class="dropdown-toggle">
-            <span class="glyphicon glyphicon-user">
-            <b class="caret"></b>
-              </span>
-          </a>
-          <ul class="dropdown-menu">
-            <li>
-              <a href="#settings" title="settings">Settings</a>
-            </li>
-            <li>
-              <a href="" title="getqrcode" ng-click="vm.showQRCode()">Liquid access</a>
-            </li>
-            <li>
-              <a href="" title="logout" ng-click="vm.logout()">Logout</a>
-            </li>
-          </ul>
-        </li>
-    </ul>
+      </div>
     </div>
+  </nav>
   </div>
-</nav>
-
 
 <script type="text/ng-template" id="showQRCode.html">
   <div class="modal-header">
