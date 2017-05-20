@@ -7,6 +7,7 @@ liquidApp.controller('navBarController', ['AuthService', 'uiSyncService', '$uibM
     var vm = this;
     this.switchInfo = $routeParams.info;
     this.isLoggedIn = false;
+    this.profilePic = "";
 
     this.formWelcomeMsg = function() {
 	console.log("In formWelcomeMsg");
@@ -17,6 +18,7 @@ liquidApp.controller('navBarController', ['AuthService', 'uiSyncService', '$uibM
             .then(function (response) {
                 console.log(response);
                 vm.welcomeMsg = "Hello " + response.user.name;
+                 vm.profilePic = response.user.name.replace(/\s+/g, '_') + ".png";
                 vm.isLoggedIn = true;
             })
             // handle error

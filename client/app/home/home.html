@@ -1,19 +1,23 @@
 <div ng-include='"components/navbar/navbar.html"'></div>
 
-<div class="jumbotron text-center">
-  <h1>Just in</h1>
-  <p>Real time weather news!</p>
+<div class="row jumbotron text-center">
+	<h1>Just in</h1>
+	<p>Real time weather news!</p>
 </div>
 <div class="container" ng-controller="homeController as vm">
-  <div class="row">
-	<div class="col-sm-4" ng-repeat="newsItem in vm.news">
-		<a href="" ng-click="vm.showDetailedNews(newsItem.title)">
-			<div>
-				<h3>{{newsItem.title}}</h3>
-				  <p>{{newsItem.subtitle}}</p>
-				  <p>{{newsItem.shortContent}}</p>
-			</div>
-		</a>
+	<div class="row">
+	  <div class="col-sm-12">
+		  <div ng-repeat="newsItem in vm.news" id="{{'news' + $index}}" ng-click="vm.recordPosition($event)" scroll-if="true">
+			  <a href="" ng-click="vm.showDetailedNews(newsItem.title)">
+				<div>
+					<h3>{{newsItem.title}}</h3>
+				</div>
+			</a>
+			  <p>{{newsItem.subtitle}}</p>
+			  <p>{{newsItem.shortContent}}</p>
+			  <hr class="colorgraph">
+
+		  </div>
 	</div>
   </div>
 	<!--<div class="row">

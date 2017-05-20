@@ -1,7 +1,17 @@
 var liquidApp = angular.module('liquidAccessApp');
 
-liquidApp.controller('signupController', ['$scope', '$window', 'AuthService', '$location', function($scope, $window, AuthService, $location) {
+liquidApp.controller('signupController', ['$scope', '$window', 'AuthService', 'fileReader', '$location', function($scope, $window, AuthService, fileReader, $location) {
 	var vm = this;
+	var formData = new FormData();
+
+    $scope.getFile = function () {
+        $scope.progress = 0;
+        formData.append('profilepic', $scope.file);
+        fileReader.readAsDataUrl($scope.file, $scope)
+            .then(function(result) {
+                $scope.imageSrc = result;
+            });
+    };
 
 	this.signup = function()  {
 		if(vm.password && vm.password !== vm.confirmpwd) {
@@ -15,7 +25,7 @@ liquidApp.controller('signupController', ['$scope', '$window', 'AuthService', '$
             vm.disabled = true;
 
             // call register from service
-            AuthService.register(vm.firstname, vm.lastname, vm.password, vm.email)
+            AuthService.register(vm.firstname, vm.lastname, vm.password, vm.email, formData)
             // handle success
                 .then(function (response) {
                     console.log(response);

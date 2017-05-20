@@ -3,7 +3,8 @@
  */
 var liquidApp = angular.module('liquidAccessApp');
 
-liquidApp.controller('homeController', ['$scope', '$window', 'AuthService', 'NewsService', '$location', function($scope, $window, AuthService, NewsService, $location) {
+liquidApp.controller('homeController', ['$scope', '$window', 'AuthService', 'NewsService', 'uiSyncService', '$location',
+    function($scope, $window, AuthService, NewsService, uiSyncService, $location) {
     var vm = this;
     this.news = undefined;
     this.navInfo = undefined;
@@ -51,5 +52,12 @@ liquidApp.controller('homeController', ['$scope', '$window', 'AuthService', 'New
             window.alert("Login to access subscriber content");
         }
     };
+
+    this.recordPosition = function(event) {
+        if(event.target.id) {
+            console.log(event.target.id);
+            uiSyncService.setElemInView(event.target.id);
+        }
+    }
 
 }]);

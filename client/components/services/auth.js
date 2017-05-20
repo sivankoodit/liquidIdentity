@@ -157,14 +157,20 @@ angular.module('liquidAccessApp').factory('AuthService',
 
             }
 
-            function register(firstname, lastname, password, email) {
+            function register(firstname, lastname, password, email, formData) {
 
                 // create a new instance of deferred
                 var deferred = $q.defer();
 
+                formData.append('firstname', firstname);
+                formData.append('lastname', lastname);
+                formData.append('password', password);
+                formData.append('email', email);
+
                 // send a post request to the server
-                $http.post('/api/signup',
-                    {firstname: firstname, lastname: lastname, password: password, email: email})
+                $http.post('/api/signup', formData,
+                    {transformRequest: angular.identity,
+                    headers: {'Content-Type': undefined}})
                 // handle success
                     .success(function (data, status) {
                         console.log(data);

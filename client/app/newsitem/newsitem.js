@@ -9,12 +9,6 @@ liquidApp.controller('newsItemController', ['NewsService', 'uiSyncService', '$ro
     this.currentItemTitle = null;
     this.elemToViewId = null;
 
-    this.itemInfo = {
-		title: null,
-		content: null,
-		comments: []
-	}
-
 	this.recordPosition = function(event) {
         if(event.target.id) {
             console.log(event.target.id);
@@ -72,6 +66,8 @@ liquidApp.controller('newsItemController', ['NewsService', 'uiSyncService', '$ro
         // handle success
             .then(function (response) {
                 console.log(response);
+                this.commentText = "set here to check";
+                //uiSyncService.setElemInView(null);
                 loadNewsItem();
             })
             // handle error

@@ -25,9 +25,11 @@
           <li ng-if="!vm.isLoggedIn" ><a href="#login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
           <li ng-if="vm.isLoggedIn" class="dropdown pull-right">
             <a href="" data-toggle="dropdown" class="dropdown-toggle">
-              <span class="glyphicon glyphicon-user">
-              <b class="caret"></b>
-                </span>
+              <span>
+                <!--class="glyphicon glyphicon-user"-->
+                <img ng-src="{{vm.profilePic}}" width="60" height="60">
+                <b class="caret"></b>
+              </span>
             </a>
             <ul class="dropdown-menu">
               <li>

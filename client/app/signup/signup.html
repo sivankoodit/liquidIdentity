@@ -2,7 +2,7 @@
 
 <div class="container" ng-controller="signupController as vm">
 <div class="jumbotron">
-	<h2>Welcome <small>You are the {{n}}th member to join!</small></h2>
+	<h2>Welcome!</h2>
 	<hr class="colorgraph">
 </div>
 <div class="row">
@@ -28,6 +28,13 @@
 						<input type="password" class="form-control input-lg" placeholder="Confirm password" tabindex="5" required ng-model="vm.confirmpwd">
 					</div>
 				</div>
+			</div>
+			<div class="form-group">
+				<input type="button" id="loadFileXml" value="Choose profile picture" onclick="document.getElementById('profilepic').click();" />
+				<input type="file" id="profilepic" style="display:none;" accept="image/*" ng-file-select="onFileSelect($files)"></input>
+				<br />
+				<i ng-hide="imageSrc">Preview:</i>
+				<img ng-src="{{imageSrc}}" width="120" height="120" /><br/>
 			</div>
 			<div class="row">
 				<div class="col-xs-4 col-sm-3 col-md-3" >					

@@ -7,39 +7,70 @@ var config      = require('../config/database'); // get db config file
 var auth = require('../config/auth');
 var User        = require('../models/user'); // get the mongoose model
 var moment  = require('moment');
-
+var formidable = require('formidable');
+var multer = require('multer');
+var upload = multer();
+var fs = require('fs');
 
 
 // bundle our routes
 var apiRoutes = express.Router();
 
+apiRoutes.post('/profilepic', function(req, res){
+    var form = new formidable.IncomingForm();
+    form.parse(req, function (err, fields, files) {
+        var oldpath = files.filetoupload.path;
+        var newpath = '/Users/siva/projects/liquidlogin/client/' + files.filetoupload.name;
+        fs.rename(oldpath, newpath, function (err) {
+            if (err) throw err;
+            res.write('File uploaded and moved!');
+            res.end();
+        });
+    });
+});
+
 // create a new user account (POST http://localhost:8080/api/signup)
 apiRoutes.post('/signup', function(req, res) {
-    if (!req.body.firstname || !req.body.password || !req.body.email) {
-        res.json({success: false, msg: 'Please pass name, password and email'});
-    } else {
-        var newUser = new User({
-            firstname: req.body.firstname,
-            lastname: req.body.lastname || "",
-            password: req.body.password,
-            email: req.body.email
-        });
 
-        var newSessionId = generateRandomCode(16);
-        newUser.sessions.push({
-            id: newSessionId,
-            createdAt: new Date(),
+    var form = new formidable.IncomingForm();
+    form.parse(req, function (err, fields, files) {
+
+        if (!fields.firstname || !fields.password || !fields.email) {
+            res.json({success: false, msg: 'Please pass name, password and email'});
+        } else {
+            var newUser = new User({
+                firstname: fields.firstname,
+                lastname: fields.lastname || "",
+                password: fields.password,
+                email: fields.email
+            });
+
+            var newSessionId = generateRandomCode(16);
+            newUser.sessions.push({
+                id: newSessionId,
+                createdAt: new Date(),
+            });
+            // save the user
+            newUser.save(function(err) {
+                if (err) {
+                    return res.json({success: false, msg: 'Email already registered.'});
+                } else {
+
+                    // if user is created, create a token
+                    res.json({success: true, token: newSessionId, user: {firstname: newUser.firstname, lastname: newUser.lastname}, msg: 'Added as a member'});
+                }
+            });
+        }
+
+        var oldpath = files.profilepic.path;
+        var newpath = '/Users/siva/projects/liquidlogin/client/' + fields.firstname + "_" + fields.lastname + ".png";
+        fs.rename(oldpath, newpath, function (err) {
+            if (err) console.log(err);
+
         });
-        // save the user
-        newUser.save(function(err) {
-            if (err) {
-                return res.json({success: false, msg: 'Email already registered.'});
-            } else {
-                // if user is created, create a token
-                res.json({success: true, token: newSessionId, user: {firstname: newUser.firstname, lastname: newUser.lastname}, msg: 'Added as a member'});
-            }
-        });
-    }
+    });
+
+
 });
 
 // route to authenticate a user (POST http://localhost:8080/api/authenticate)
