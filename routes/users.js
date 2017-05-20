@@ -78,7 +78,7 @@ apiRoutes.post('/authenticate', function(req, res) {
     auth.authenticate(req.body.email, req.body.password, function(err, userInfo) {
         if (err) throw err;
         if (!userInfo) {
-            res.send({success: false, msg: 'Authentication failed. User not found.'});
+            res.status(401).send({success: false, msg: 'Authentication failed. User not found.'});
         } else {
             res.send({success: true, token: userInfo.sessionId, user: {name: userInfo.name}, msg: 'Authentication succeeded'});
         }
@@ -92,7 +92,7 @@ apiRoutes.get('/memberinfo', function(req, res) {
         auth.isValidSession(req.headers.authorization, function(err, user) {
             if (err) throw err;
             if (!user) {
-                return res.status(403).send({success: false, msg: 'Authentication failed. No valid session found.'});
+                return res.status(401).send({success: false, msg: 'Authentication failed. No valid session found.'});
             } else {
                 res.json({success: true, user: {name: user.firstname + ' ' + user.lastname}, msg: 'Valid session found'});
             }

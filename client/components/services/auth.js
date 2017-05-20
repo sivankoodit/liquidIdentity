@@ -117,8 +117,6 @@ angular.module('liquidAccessApp').factory('AuthService',
                         if(status === 200 && data.token){
                             storeUserDetails(data.token, data.user);
                             deferred.resolve(data);
-
-
                         } else {
                             currentUser = null;
                             deferred.reject();
@@ -126,8 +124,10 @@ angular.module('liquidAccessApp').factory('AuthService',
                     })
                     // handle error
                     .error(function (data) {
+                        // Not the right way!?
+                        console.log("inside catch in auth.js" + data);
                         currentUser = null;
-                        deferred.reject();
+                        deferred.resolve(data);
                     });
 
                 // return promise object

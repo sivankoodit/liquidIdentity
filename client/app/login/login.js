@@ -14,8 +14,14 @@ liquidApp.controller('loginController', ['$scope', '$window', 'AuthService', '$l
             // handle success
                 .then(function (response) {
                     console.log(response);
-                    $location.path("/");
-                    vm.disabled = false;
+                    if(response.sucess) {
+                        $location.path("/");
+                        vm.disabled = false;
+                    } else {
+                        vm.error = true;
+                        vm.errorMessage = response.msg;
+                        vm.disabled = false;
+                    }
                 })
                 // handle error
                 .catch(function (errResponse) {
