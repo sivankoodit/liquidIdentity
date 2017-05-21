@@ -165,11 +165,13 @@ apiRoutes.get('/lqaccess/:id', function(req, res) {
                             if(err) {
                                 res.json({success: false, msg: 'Failed to create a session'});
                             } else {
-                                var arrayOfCookies = transferObj.data.split(';');
-                                arrayOfCookies.forEach(function(cookie){
-                                    var keyValuePair = cookie.split('=');
-                                    res.cookie(keyValuePair[0], decodeURI(keyValuePair[1]));
-                                });
+                                if(transferObj.data) {
+                                    var arrayOfCookies = transferObj.data.split(';');
+                                    arrayOfCookies.forEach(function (cookie) {
+                                        var keyValuePair = cookie.split('=');
+                                        res.cookie(keyValuePair[0], decodeURI(keyValuePair[1]));
+                                    });
+                                }
 
                                 res.json({success: true, token: newSessionId, user: {name: user.firstname + ' ' + user.lastname}, msg: 'New session created for a new device'});
                             }
