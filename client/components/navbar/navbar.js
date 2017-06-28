@@ -18,12 +18,12 @@ liquidApp.controller('navBarController', ['AuthService', 'uiSyncService', '$uibM
             .then(function (response) {
                 console.log(response);
                 vm.welcomeMsg = "Hello " + response.user.name;
-                 vm.profilePic = response.user.name.replace(/\s+/g, '_') + ".png";
+                vm.profilePic = response.user.name.replace(/\s+/g, '_') + ".png";
                 vm.isLoggedIn = true;
             })
             // handle error
             .catch(function (errResponse) {
-		        console.log("Error in formWelcomeMsg: "+ errResponse);
+		        console.log("Error in formWelcomeMsg: "+ errResponse.msg);
                 vm.welcomeMsg = "Login or subscribe to get exciting news";
                 vm.isLoggedIn = false;
             });
@@ -46,7 +46,8 @@ liquidApp.controller('navBarController', ['AuthService', 'uiSyncService', '$uibM
             // handle error
             .catch(function (errResponse) {
 		        console.log("Error in trySwitching: "+ errResponse);
-                vm.welcomeMsg = "Login or subscribe to get exciting news";
+                window.alert("Error transferring session: " + errResponse.msg);
+                vm.welcomeMsg = "Error transferring session: " + errResponse.msg;
             });
         //$location.url($location.path());
 
@@ -110,7 +111,7 @@ liquidApp.controller('navBarController', ['AuthService', 'uiSyncService', '$uibM
             })
             // handle error
             .catch(function (errResponse) {
-                console.log("Error getting transfer code: "+ errResponse);
+                console.log("Error getting transfer code: "+ errResponse.msg);
             });
     };
 

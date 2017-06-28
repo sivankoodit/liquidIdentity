@@ -3,33 +3,24 @@
  */
 
 var express = require('express');
-var config      = require('../config/database'); // get db config file
-var auth = require('../config/auth');
-var User        = require('../models/user'); // get the mongoose model
 var moment  = require('moment');
 var formidable = require('formidable');
 var multer = require('multer');
-var upload = multer();
 var fs = require('fs');
 
+var config = require('../config/database'); // get db config file
+var auth = require('../config/auth');
+var User = require('../models/user'); // get the mongoose model
+
+
+var upload = multer();
 
 // bundle our routes
 var apiRoutes = express.Router();
 
-apiRoutes.post('/profilepic', function(req, res){
-    var form = new formidable.IncomingForm();
-    form.parse(req, function (err, fields, files) {
-        var oldpath = files.filetoupload.path;
-        var newpath = '/Users/siva/projects/liquidlogin/client/' + files.filetoupload.name;
-        fs.rename(oldpath, newpath, function (err) {
-            if (err) throw err;
-            res.write('File uploaded and moved!');
-            res.end();
-        });
-    });
-});
 
 // create a new user account (POST http://localhost:8080/api/signup)
+// Receives the user name, email, password and profile picture
 apiRoutes.post('/signup', function(req, res) {
 
     var form = new formidable.IncomingForm();
@@ -55,6 +46,14 @@ apiRoutes.post('/signup', function(req, res) {
                 if (err) {
                     return res.json({success: false, msg: 'Email already registered.'});
                 } else {
+                    if(files && files.profilepic) {
+                        var oldpath = files.profilepic.path;
+                        var newpath = '/Users/siva/projects/liquidlogin/client/' + fields.firstname + "_" + fields.lastname + ".png";
+                        fs.rename(oldpath, newpath, function (err) {
+                            if (err) console.log(err);
+
+                        });
+                    }
 
                     // if user is created, create a token
                     res.json({success: true, token: newSessionId, user: {firstname: newUser.firstname, lastname: newUser.lastname}, msg: 'Added as a member'});
@@ -62,12 +61,7 @@ apiRoutes.post('/signup', function(req, res) {
             });
         }
 
-        var oldpath = files.profilepic.path;
-        var newpath = '/Users/siva/projects/liquidlogin/client/' + fields.firstname + "_" + fields.lastname + ".png";
-        fs.rename(oldpath, newpath, function (err) {
-            if (err) console.log(err);
 
-        });
     });
 
 
@@ -98,7 +92,7 @@ apiRoutes.get('/memberinfo', function(req, res) {
             }
         });
     } else {
-        return res.json({success: false, msg: 'No token provided.'});
+        return res.status(401).send({success: false, msg: 'No token provided.'});
     }
 });
 
@@ -123,7 +117,7 @@ apiRoutes.get('/transfercode', function(req, res) {
 
                 user.save(function(err) {
                     if (err) {
-                        return res.json({success: false, msg: 'Error generating code'});
+                        return res.status(500).send({success: false, msg: 'Error generating code'});
                     } else {
                         res.json({success: true, code: transferCode, msg: 'Use this code to switch'});
                     }
@@ -131,7 +125,7 @@ apiRoutes.get('/transfercode', function(req, res) {
             }
         });
     } else {
-        return res.json({success: false, msg: 'No token provided.'});
+        return res.status(403).send({success: false, msg: 'No token provided.'});
     }
 });
 
@@ -163,7 +157,7 @@ apiRoutes.get('/lqaccess/:id', function(req, res) {
                         });
                         user.save(function(err){
                             if(err) {
-                                res.json({success: false, msg: 'Failed to create a session'});
+                                res.status(500).send({success: false, msg: 'Failed to create a session'});
                             } else {
                                 if(transferObj.data) {
                                     var arrayOfCookies = transferObj.data.split(';');
@@ -181,7 +175,7 @@ apiRoutes.get('/lqaccess/:id', function(req, res) {
 
             });
     } else {
-        return res.status(403).send({success: false, msg: 'No token provided.'});
+        return res.status(403).send({success: false, msg: 'No transfer code provided.'});
     }
 });
 

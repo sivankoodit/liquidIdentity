@@ -33,9 +33,9 @@ liquidApp.controller('signupController', ['$scope', '$window', 'AuthService', 'f
                     vm.disabled = false;
                 })
                 // handle error
-                .catch(function () {
+                .catch(function (err) {
                     vm.error = true;
-                    vm.errorMessage = "Something went wrong!";
+                    vm.errorMessage = err.msg;
                     vm.disabled = false;
                 });
 		}

@@ -54,12 +54,12 @@ angular.module('liquidAccessApp').factory('NewsService',
                         if(data && data.success){
                             deferred.resolve(data);
                         } else {
-                            deferred.reject();
+                            deferred.reject(data);
                         }
                     })
                     // handle error
-                    .error(function (data) {
-                        deferred.reject();
+                    .error(function (err) {
+                        deferred.reject(err);
                     });
                 return deferred.promise;
             };
@@ -73,12 +73,12 @@ angular.module('liquidAccessApp').factory('NewsService',
                         if(data && data.success){
                             deferred.resolve(data);
                         } else {
-                            deferred.reject();
+                            deferred.reject(data);
                         }
                     })
                     // handle error
-                    .error(function (data) {
-                        deferred.reject();
+                    .error(function (err) {
+                        deferred.reject(err);
                     });
                 return deferred.promise;
             };
@@ -92,12 +92,12 @@ angular.module('liquidAccessApp').factory('NewsService',
                         if(data && data.success){
                             deferred.resolve(data);
                         } else {
-                            deferred.reject();
+                            deferred.reject(data);
                         }
                     })
                     // handle error
-                    .error(function (data) {
-                        deferred.reject();
+                    .error(function (err) {
+                        deferred.reject(err);
                     });
                 return deferred.promise;
             };

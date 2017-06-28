@@ -4,46 +4,45 @@ liquidApp.controller('newsItemController', ['NewsService', 'uiSyncService', '$ro
     function(NewsService, uiSyncService, $routeParams, $location, $anchorScroll) {
 
     var vm = this;
-	this.newsItem = undefined;
-	this.commentText = null;
-    this.currentItemTitle = null;
-    this.elemToViewId = null;
+        vm.newsItem = undefined;
+        vm.commentText = null;
+        vm.currentItemTitle = null;
+        vm.elemToViewId = null;
 
-	this.recordPosition = function(event) {
+        vm.recordPosition = function(event) {
         if(event.target.id) {
             console.log(event.target.id);
             uiSyncService.setElemInView(event.target.id);
         }
     }
 
-	var loadNewsItem = function() {
+        vm.loadNewsItem = function() {
 
-        this.elemToViewId = uiSyncService.getElemInView();
+        vm.elemToViewId = uiSyncService.getElemInView();
 
         //$anchorScroll.disableAutoScrolling();
 
-        this.currentItemTitle = NewsService.getCurrentItem();
+        vm.currentItemTitle = NewsService.getCurrentItem();
 
-        // get news item
-		// get list of comments
-        NewsService.getNewsItem(currentItemTitle)
-        // handle success
-            .then(function (response) {
-                console.log(response);
-                this.commentText = null;
-                vm.newsItem = response.newsItem;
-            })
-            // handle error
-            .catch(function (errResponse) {
-                console.log("Error getting detailed news: "+ errResponse);
-            });
+        if(vm.currentItemTitle) {
 
-
-
-
+            // get news item
+            // get list of comments
+            NewsService.getNewsItem(vm.currentItemTitle)
+            // handle success
+                .then(function (response) {
+                    console.log(response);
+                    vm.commentText = '';
+                    vm.newsItem = response.newsItem;
+                })
+                // handle error
+                .catch(function (errResponse) {
+                    window.alert("Error getting detailed news: " + errResponse);
+                });
+        } // end of i
 	}
 
-    loadNewsItem();
+        vm.loadNewsItem();
 
         angular.element(document).ready(function () {
             console.log('page loading completed');
@@ -58,21 +57,20 @@ liquidApp.controller('newsItemController', ['NewsService', 'uiSyncService', '$ro
             }
         });
 
-	this.addComment = function() {
+        vm.addComment = function() {
         //NewsService.setAuthHeader();
         // get news item
         // get list of comments
-        NewsService.addComment(currentItemTitle, this.commentText)
+        NewsService.addComment(vm.currentItemTitle, vm.commentText)
         // handle success
             .then(function (response) {
                 console.log(response);
-                this.commentText = "set here to check";
                 //uiSyncService.setElemInView(null);
-                loadNewsItem();
+                vm.loadNewsItem();
             })
             // handle error
             .catch(function (errResponse) {
-                console.log("Error adding comment: "+ errResponse);
+                window.alert("Error adding comment: "+ errResponse);
             });
 	};
 

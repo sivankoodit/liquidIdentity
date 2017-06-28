@@ -3,12 +3,12 @@ var app = express();
 var bodyParser  = require('body-parser');
 var morgan      = require('morgan');
 var mongoose    = require('mongoose');
-var config      = require('./config/database'); // get db config file
-
 var path        = require('path');
+var cookieParser = require('cookie-parser');
+
+var config      = require('./config/database'); // get db config file
 var apiRoutes = require('./routes/users');
 var newsRoutes = require('./routes/newsContents');
-var cookieParser = require('cookie-parser');
 
 
 // get our request parameters

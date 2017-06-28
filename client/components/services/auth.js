@@ -69,14 +69,12 @@ angular.module('liquidAccessApp').factory('AuthService',
                         if(data.success){
                             deferred.resolve(data);
                         } else {
-                            currentUser = null;
-                            deferred.reject();
+                            deferred.reject(data);
                         }
                     })
                     // handle error
-                    .error(function (data) {
-                        currentUser = null;
-                        deferred.reject();
+                    .error(function (err) {
+                        deferred.reject(err);
                     });
                 return deferred.promise;
             }
@@ -92,14 +90,12 @@ angular.module('liquidAccessApp').factory('AuthService',
                         if(data.success){
                             deferred.resolve(data);
                         } else {
-                            currentUser = null;
-                            deferred.reject();
+                            deferred.reject(data);
                         }
                     })
                     // handle error
-                    .error(function (data) {
-                        currentUser = null;
-                        deferred.reject();
+                    .error(function (err) {
+                        deferred.reject(err);
                     });
                 return deferred.promise;
             }
@@ -118,16 +114,14 @@ angular.module('liquidAccessApp').factory('AuthService',
                             storeUserDetails(data.token, data.user);
                             deferred.resolve(data);
                         } else {
-                            currentUser = null;
-                            deferred.reject();
+                            deferred.reject(data);
                         }
                     })
                     // handle error
-                    .error(function (data) {
+                    .error(function (err) {
                         // Not the right way!?
-                        console.log("inside catch in auth.js" + data);
-                        currentUser = null;
-                        deferred.resolve(data);
+                        console.log("inside catch in auth.js" + err);
+                        deferred.reject(err);
                     });
 
                 // return promise object
@@ -145,11 +139,11 @@ angular.module('liquidAccessApp').factory('AuthService',
                 // handle success
                     .success(function (data) {
                         destroyUserDetails();
-                        deferred.resolve();
+                        deferred.resolve(data);
                     })
                     // handle error
-                    .error(function (data) {
-                        deferred.reject();
+                    .error(function (err) {
+                        deferred.reject(err);
                     });
 
                 // return promise object
@@ -179,12 +173,12 @@ angular.module('liquidAccessApp').factory('AuthService',
                             storeUserDetails(data.token, data.user);
                             deferred.resolve(data);
                         } else {
-                            deferred.reject();
+                            deferred.reject(data);
                         }
                     })
                     // handle error
-                    .error(function (data) {
-                        deferred.reject();
+                    .error(function (err) {
+                        deferred.reject(err);
                     });
 
                 // return promise object
@@ -204,13 +198,12 @@ angular.module('liquidAccessApp').factory('AuthService',
                             storeUserDetails(data.token, data.user);
                             deferred.resolve(data);
                         } else {
-                            deferred.reject();
+                            deferred.reject(data);
                         }
                     })
                     // handle error
-                    .error(function (data) {
-                        currentUser = null;
-                        deferred.reject();
+                    .error(function (err) {
+                        deferred.reject(err);
                     });
                 return deferred.promise;
             }
