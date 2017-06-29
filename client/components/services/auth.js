@@ -50,7 +50,9 @@ angular.module('liquidAccessApp').factory('AuthService',
                 getAuthToken: getAuthToken,
                 getCurrentUser: getCurrentUser,
                 liquidAccess: liquidAccess,
-                getTransferCode: getTransferCode
+                getTransferCode: getTransferCode,
+                createProfile: createProfile,
+                shareAccess: shareAccess
             });
 
 
@@ -185,6 +187,63 @@ angular.module('liquidAccessApp').factory('AuthService',
                 return deferred.promise;
 
             }
+
+            function createProfile(firstname, lastname, email, sharedUntil) {
+
+                // create a new instance of deferred
+                var deferred = $q.defer();
+
+                // send a post request to the server
+                $http.post('/api/createProfile',
+                    {firstname:firstname, lastname: lastname, email: email, sharedUntil: sharedUntil})
+                // handle success
+                    .success(function (data, status) {
+                        if(status === 200 && data.token){
+                            deferred.resolve(data);
+                        } else {
+                            deferred.reject(data);
+                        }
+                    })
+                    // handle error
+                    .error(function (err) {
+                        // Not the right way!?
+                        console.log("inside catch in auth.js" + err);
+                        deferred.reject(err);
+                    });
+
+                // return promise object
+                return deferred.promise;
+
+            }
+
+            function shareAccess(email, sharedUntil) {
+
+                // create a new instance of deferred
+                var deferred = $q.defer();
+
+                // send a post request to the server
+                $http.post('/api/shareAccess',
+                    {email: email, sharedUntil: sharedUntil})
+                // handle success
+                    .success(function (data, status) {
+                        if(status === 200 && data.token){
+                            deferred.resolve(data);
+                        } else {
+                            deferred.reject(data);
+                        }
+                    })
+                    // handle error
+                    .error(function (err) {
+                        // Not the right way!?
+                        console.log("inside catch in auth.js" + err);
+                        deferred.reject(err);
+                    });
+
+                // return promise object
+                return deferred.promise;
+
+            }
+
 
             function liquidAccess(code) {
 

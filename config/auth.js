@@ -3,7 +3,10 @@
  */
 
 // load up the user model
-var User = require('../models/user');
+    require('../models/user');
+var User = require('mongoose').model('User');
+var Session = require('mongoose').model('Session');
+
 var config = require('../config/database'); // get db config file
 
 
@@ -16,50 +19,58 @@ var authenticate = function(email, password, authCallback) {
         if (user) {
             user.comparePassword(password, function (err, isMatch) {
                 if (isMatch && !err) {
-                    var sessId = generateRandomCode(16);
-                    user.sessions.push({
-                        id: sessId,
-                        createdAt: new Date()
-                    });
-                    user.save(function(err){
-                        if (err) {
-                            authCallback(err, false);
-                        } else {
 
+                    var newSessionId = generateRandomCode(16);
+                    var userSession = new Session({
+                        sessionToken: newSessionId,
+                        createdAt: new Date(),
+                        createdFor: email
+                    });
+                    userSession.save(function(err){
+                        if(err)
+                        {
+                            console.log(err);
+                            authCallback("error creating session", null);
+                        }
+                        else{
                             var userInfo = {
                                 name: user.firstname + ' ' + user.lastname,
-                                sessionId : sessId
+                                sessionId : newSessionId
                             }
                             authCallback(null, userInfo); //User authenticated
                         }
                     });
 
                 } else {
-                    authCallback(null, false); //Invalid credentials
+                    authCallback("Invalid credentials", null); //Invalid credentials
                 }
             });
         } else {
-            authCallback(null, false);  //No user found
+            authCallback("Invalid credentials", null);  //No user found
         }
     });
 };
 
 
 var isValidSession = function(sessionId, sessCallback) {
-
-
-    User.findOne({'sessions.id': sessionId}, function(err, user) {
+    Session.findOne({sessionToken: sessionId}, function (err, sess) {
         if (err) {
-            sessCallback(err, false); //Error reading from database
+            sessCallback(err, null); //Error reading from database
         }
-        if (user) {
-                    sessCallback(null, user);
-                } else {
-                    sessCallback(null, false); //Account related to session doesnt exist
-                }
-
+        else {
+            if (sess) {
+                User.findOne({email: sess.createdFor}, function (err, user) {
+                    if (err) {
+                        sessCallback(err, null); //Account related to session doesnt exist
+                    }
+                    else {
+                        sessCallback(null, user);
+                    }
+                });
+            }
+        }
     });
-};
+}
 
 
 

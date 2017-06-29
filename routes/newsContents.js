@@ -23,7 +23,7 @@ newsRoutes.post('/addNews', function(req, res) {
             fullContent: req.body.fullContent,
             createdAt: new Date().toUTCString()
         });
-        // save the user
+        // save the newsitem
         newNewsItem.save(function(err) {
             if (err) {
                 console.log("Error adding news item: " + err);

@@ -1,0 +1,78 @@
+<div ng-include='"components/navbar/navbar.html"'></div>
+
+<div class="container" ng-controller="sharedAccessController as vm">
+<div class="row">
+    <div class="col-xs-12 col-md-6">
+        <div class="jumbotron">
+            <h2>Enter name and email of friends/family to share access</h2>
+            <hr class="colorgraph">
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <form role="form">
+                    <div class="form-group">
+                        <input type="text" class="form-control input-lg" placeholder="First name" tabindex="1" required ng-model="vm.firstname">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control input-lg" placeholder="Last name" tabindex="2" ng-model="vm.lastname">
+                    </div>
+                    <div class="form-group">
+                        <input type="email" class="form-control input-lg" placeholder="Email address" tabindex="3" required ng-model="vm.email">
+                    </div>
+                    <div class="form-group">
+                        <input type="date" class="form-control input-lg" placeholder="Sharing until" tabindex="3" required ng-model="vm.accessValidUntil">
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-3" >
+                            <span class="input-group" tabindex="7">
+                                <input type="checkbox"  ng-model="vm.agreeToTerms" tabindex="6">I Agree</input>
+                            </span>
+                        </div>
+                        <div class="col-xs-9">
+                             Before <strong class="label label-info">sharing access</strong>, you have to agree to our <a href="#">Terms and Conditions</a>
+                        </div>
+                    </div>
+
+                    <hr class="colorgraph">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <input type="submit" value="Share Access" class="btn btn-primary btn-block btn-lg" tabindex="7" ng-click="vm.createProfile()" ng-disabled="disabled">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div ng-show="vm.error" class="alert alert-danger">{{vm.errorMessage}}</div>
+        <div ng-show="vm.info" class="alert alert-success">{{vm.sharedURL}}</div>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        <div class="jumbotron">
+            <h2>Select profile to share access</h2>
+            <hr class="colorgraph">
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <form role="form">
+                    <div class="form-group">
+                        <label for="mySelect">Choose a profile:</label>
+                        <select name="mySelect" id="mySelect"
+                                ng-options="profile.name for profile in vm.userProfiles track by profile.email"
+                                ng-model="vm.selectedProfile"></select>
+                    </div>
+                    <div class="form-group">
+                        <input type="date" class="form-control input-lg" placeholder="Sharing until" tabindex="3" required ng-model="vm.extendAccessValidUntil">
+                    </div>
+                    <hr class="colorgraph">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <input type="submit" value="Share Access" class="btn btn-primary btn-block btn-lg" tabindex="7" ng-click="vm.shareAccess()" ng-disabled="disabled">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div ng-show="vm.error" class="alert alert-danger">{{vm.extendAccessErrorMessage}}</div>
+        <div ng-show="vm.info" class="alert alert-success">{{vm.extendedAccessURL}}</div>
+    </div>
+</div>
+</div>

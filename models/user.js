@@ -9,7 +9,7 @@ var bcrypt = require('bcrypt');
 
 // set up a mongoose model
 var SessionSchema = new Schema({
-    id: {
+    sessionToken: {
         type: String,
         unique: true,
         required: true
@@ -18,7 +18,7 @@ var SessionSchema = new Schema({
         type: Date,
         required: true
     },
-    lastAccessedPage: {
+    createdFor: { // Email of the user
         type: String
     }
 });
@@ -31,7 +31,7 @@ var TransferInfoSchema = new Schema({
         unique: true,
         required: true
     },
-    createdAt: {
+    validUntil: {
         type: Date,
         required: true
     },
@@ -57,12 +57,14 @@ var UserSchema = new Schema({
         required: true
     },
     password: {
-        type: String,
-        required: true
+        type: String
     },
-    sessions: [SessionSchema],
+    primaryAccountEmail: {
+        type: String
+    },
     transfers: [TransferInfoSchema]
 });
+
 
 UserSchema.pre('save', function (next) {
     var user = this;
@@ -93,4 +95,5 @@ UserSchema.methods.comparePassword = function (passw, cb) {
     });
 };
 
+module.exports = mongoose.model('Session', SessionSchema);
 module.exports = mongoose.model('User', UserSchema);

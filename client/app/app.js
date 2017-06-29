@@ -33,7 +33,13 @@ liquidApp.config(function($routeProvider) {
 	})
 	.when("/newsitem/:?info=", {
 		templateUrl: "app/newsitem/newsitem.html"
-	});
+	})
+    .when("/sharedaccess", {
+        templateUrl: "app/sharedaccess/sharedaccess.html"
+    })
+    .when("/sharedaccess/:?info=", {
+        templateUrl: "app/sharedaccess/sharedaccess.html"
+    });
 	//.otherwise({ redirectTo: '/' });
 });
 

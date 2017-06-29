@@ -41,6 +41,9 @@
               <li>
                 <a href="" title="logout" ng-click="vm.logout()">Logout</a>
               </li>
+              <li ng-if="vm.isPrimaryAccount">
+                <a href="#sharedaccess" title="shareaccess" ng-click="">Share access</a>
+              </li>
             </ul>
           </li>
       </ul>

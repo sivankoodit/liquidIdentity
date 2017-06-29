@@ -10,7 +10,9 @@ var fs = require('fs');
 
 var config = require('../config/database'); // get db config file
 var auth = require('../config/auth');
-var User = require('../models/user'); // get the mongoose model
+//var User = require('../models/user'); // get the mongoose model
+var User = require('mongoose').model('User');
+var Session = require('mongoose').model('Session');
 
 
 var upload = multer();
@@ -33,13 +35,8 @@ apiRoutes.post('/signup', function(req, res) {
                 firstname: fields.firstname,
                 lastname: fields.lastname || "",
                 password: fields.password,
-                email: fields.email
-            });
-
-            var newSessionId = generateRandomCode(16);
-            newUser.sessions.push({
-                id: newSessionId,
-                createdAt: new Date(),
+                email: fields.email,
+                primaryAccountEmail: ""
             });
             // save the user
             newUser.save(function(err) {
@@ -55,26 +52,138 @@ apiRoutes.post('/signup', function(req, res) {
                         });
                     }
 
-                    // if user is created, create a token
-                    res.json({success: true, token: newSessionId, user: {firstname: newUser.firstname, lastname: newUser.lastname}, msg: 'Added as a member'});
+                    var newSessionId = generateRandomCode(16);
+                    var userSession = new Session({
+                        sessionToken: newSessionId,
+                        createdAt: new Date(),
+                        createdFor: fields.email
+                    });
+                    userSession.save(function(err){
+                        if(err)
+                        {
+                            console.log(err);
+                            res.status(401).send({success: false, msg: 'Error creating an authorized session.'});
+                        }
+                        else{
+                            // if user is created, create a token
+                            res.json({success: true, token: newSessionId, user: {firstname: newUser.firstname, lastname: newUser.lastname}, msg: 'Added as a member'});
+                        }
+                    });
                 }
             });
         }
-
-
     });
+});
 
 
+// create a new user account (POST http://localhost:8080/api/signup)
+// Receives the user name, email, password and profile picture
+apiRoutes.post('/createprofile', function(req, res) {
+    if (req.headers && req.headers.authorization) {
+        auth.isValidSession(req.headers.authorization, function (err, user) {
+            if (err) throw err;
+            if (!user) {
+                return res.status(401).send({success: false, msg: 'Authentication failed. No valid session found.'});
+            } else {
+                if (!req.body.firstname || !req.body.email) {
+                    res.json({success: false, msg: 'Please pass name and email to share access'});
+                } else {
+                    var newUserProfile = new User({
+                        firstname: req.body.firstname,
+                        lastname: req.body.lastname || "",
+                        primaryAccountEmail: user.email,
+                        email: req.body.email,
+                        password: ""
+                    });
+                    var profileTransferCode = generateRandomCode(16);
+                    var currentTime = new Date();
+                    var validUntil = req.body.sharedUntil || currentTime.setSeconds(currentTime.getSeconds() + 3600);
+                    newUserProfile.transfers.push({
+                        transferCode: profileTransferCode,
+                        validUntil: validUntil
+                    });
+                    // save the user
+                    newUserProfile.save(function (err) {
+                        if (err) {
+                            return res.json({success: false, msg: 'Email already registered.'});
+                        } else {
+
+                            // if user is created, create a token
+                            res.json({
+                                success: true,
+                                token: profileTransferCode,
+                                user: {firstname: newUserProfile.firstname, lastname: newUserProfile.lastname},
+                                msg: 'Added as a profile'
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    } else {
+        return res.status(401).send({success: false, msg: 'No token provided.'});
+    }
+});
+
+apiRoutes.post('/shareAccess', function(req, res) {
+    if (req.headers && req.headers.authorization) {
+        auth.isValidSession(req.headers.authorization, function (err, user) {
+            if (err) throw err;
+            if (!user) {
+                return res.status(401).send({success: false, msg: 'Authentication failed. No valid session found.'});
+            } else {
+                if (!req.body.email) {
+                    res.json({success: false, msg: 'Please pass profile to share access'});
+                } else {
+                    User.findOne({email: req.body.email}, function(err, userProfile){
+                        if(err){
+                            return res.json({success: false, msg: 'Unable to find user profile.' + err});
+                        }
+                        else {
+                            var profileTransferCode = generateRandomCode(16);
+                            var currentTime = new Date();
+                            var validUntil = req.body.sharedUntil || currentTime.setSeconds(currentTime.getSeconds() + 3600);
+                            userProfile.transfers.push({
+                                transferCode: profileTransferCode,
+                                validUntil: validUntil
+                            });
+                            // save the user
+                            userProfile.save(function (err) {
+                                if (err) {
+                                    return res.json({success: false, msg: 'Unable to create shared access.' + err});
+                                } else {
+
+                                    // if user is created, create a token
+                                    res.json({
+                                        success: true,
+                                        token: profileTransferCode,
+                                        user: {firstname: userProfile.firstname, lastname: userProfile.lastname},
+                                        msg: 'Added access'
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    } else {
+        return res.status(401).send({success: false, msg: 'No token provided.'});
+    }
 });
 
 // route to authenticate a user (POST http://localhost:8080/api/authenticate)
 apiRoutes.post('/authenticate', function(req, res) {
     auth.authenticate(req.body.email, req.body.password, function(err, userInfo) {
-        if (err) throw err;
-        if (!userInfo) {
-            res.status(401).send({success: false, msg: 'Authentication failed. User not found.'});
-        } else {
-            res.send({success: true, token: userInfo.sessionId, user: {name: userInfo.name}, msg: 'Authentication succeeded'});
+        if (err) {
+            res.status(401).send({success: false, msg: err});
+        }
+        else {
+            if (!userInfo) {
+                res.status(401).send({success: false, msg: 'Authentication failed. User not found.'});
+            } else {
+                res.send({success: true, token: userInfo.sessionId, user: {name: userInfo.name}, msg: 'Authentication succeeded'});
+            }
         }
     });
 });
@@ -88,7 +197,28 @@ apiRoutes.get('/memberinfo', function(req, res) {
             if (!user) {
                 return res.status(401).send({success: false, msg: 'Authentication failed. No valid session found.'});
             } else {
-                res.json({success: true, user: {name: user.firstname + ' ' + user.lastname}, msg: 'Valid session found'});
+                var userInfo = {
+                    name: user.firstname + ' ' + user.lastname,
+                    primaryAccount: user.primaryAccountEmail === "",
+                };
+                if(user.primaryAccountEmail === "") {
+                    User.find({primaryAccountEmail: user.email}, function(err, userProfiles){
+                        if(err) {
+                            console.log("Error getting child profiles: " + err);
+                            res.json({success: true, user: userInfo, msg: 'Valid session found'});
+                        }
+                        else{
+                            userInfo.sharedAccessTo = [];
+                            userProfiles.forEach(function(userProfile){
+                                   userInfo.sharedAccessTo.push({name: userProfile.firstname + ' ' + userProfile.lastname, email: userProfile.email});
+                            });
+                            res.json({success: true, user: userInfo, msg: 'Valid session found'});
+                        }
+                    });
+                }
+                else {
+                    res.json({success: true, user: userInfo, msg: 'Valid session found'});
+                }
             }
         });
     } else {
@@ -102,22 +232,22 @@ apiRoutes.get('/transfercode', function(req, res) {
         auth.isValidSession(req.headers.authorization, function(err, user) {
             console.log(req.headers.cookie);
             console.log(req.cookies);
-
-
             if (err) throw err;
             if (!user) {
                 return res.status(403).send({success: false, msg: 'No valid session.'});
             } else {
                 var transferCode = generateRandomCode(12);
+                var currentTime = new Date();
+                var validUntil = currentTime.setSeconds(currentTime.getSeconds() + 60);
                 user.transfers.push({
                     transferCode: transferCode,
-                    createdAt: new Date(),
+                    validUntil: validUntil,
                     data: req.headers.cookie
                 });
 
                 user.save(function(err) {
                     if (err) {
-                        return res.status(500).send({success: false, msg: 'Error generating code'});
+                        return res.status(401).send({success: false, msg: 'Error generating code'});
                     } else {
                         res.json({success: true, code: transferCode, msg: 'Use this code to switch'});
                     }
@@ -143,22 +273,39 @@ apiRoutes.get('/lqaccess/:id', function(req, res) {
                     var transferObj = user.transfers.filter(function ( obj ) {
                         return obj.transferCode === code;
                     })[0];
-                    var issuedAt = moment(transferObj.createdAt);
+                    var validUntil = moment(transferObj.validUntil);
                     var currentTime = moment();
-                    console.log('issued: ' + issuedAt.format('LTS') + "  current: " + currentTime.format('LTS'));
-                    if(currentTime.diff(issuedAt, 'seconds') > 60) {
+                    console.log('validUntil: ' + validUntil.format('LTS') + "  current: " + currentTime.format('LTS'));
+                    if(currentTime.isAfter(validUntil)) {
                         //user.transfers[0].remove();
-                        return res.status(403).send({success: false, msg: 'Token expired. Try generating it again'});
-                    } else {
-                        var newSessionId = generateRandomCode(16);
-                            user.sessions.push({
-                            id: newSessionId,
-                            createdAt: new Date(),
-                        });
+                        user.transfers.id(transferObj.id).remove();
                         user.save(function(err){
                             if(err) {
-                                res.status(500).send({success: false, msg: 'Failed to create a session'});
-                            } else {
+                                console.log("Error removing transfer code: " + transferObj.transferCode)
+                            }
+                        });
+                        return res.status(403).send({success: false, msg: 'Token expired. Try generating it again'});
+                    } else {
+
+                        var newSessionId = generateRandomCode(16);
+                        var userSession = new Session({
+                            sessionToken: newSessionId,
+                            createdAt: new Date(),
+                            createdFor: user.email
+                        });
+                        userSession.save(function(err){
+                            if(err)
+                            {
+                                res.status(401).send({success: false, msg: 'Error creating an authorized session.'});
+                            }
+                            else{
+                                // user.transfers.id(transferObj.id).remove();
+                                // user.save(function(err){
+                                //     if(err) {
+                                //         console.log("Error removing transfer code: " + transferObj.transferCode)
+                                //     }
+                                // });
+
                                 if(transferObj.data) {
                                     var arrayOfCookies = transferObj.data.split(';');
                                     arrayOfCookies.forEach(function (cookie) {
@@ -166,7 +313,6 @@ apiRoutes.get('/lqaccess/:id', function(req, res) {
                                         res.cookie(keyValuePair[0], decodeURI(keyValuePair[1]));
                                     });
                                 }
-
                                 res.json({success: true, token: newSessionId, user: {name: user.firstname + ' ' + user.lastname}, msg: 'New session created for a new device'});
                             }
                         });
