@@ -34,7 +34,7 @@ liquidApp.controller('sharedAccessController', ['$scope', '$window', 'AuthServic
                 .then(function (response) {
                     console.log(response);
                     vm.info = true;
-                	vm.extendedAccessURL = "http://localhost:8899/#/?info=" + response.token;
+                    vm.extendedAccessURL = location.origin + "/#/?info=" + response.token;
                     vm.disabled = false;
                 })
                 // handle error
@@ -63,7 +63,7 @@ liquidApp.controller('sharedAccessController', ['$scope', '$window', 'AuthServic
                 .then(function (response) {
                     console.log(response);
                     vm.info = true;
-                    vm.sharedURL = "http://localhost:8899/#/?info=" + response.token;
+                    vm.sharedURL = location.origin + "/#/?info=" + response.token;
                     vm.disabled = false;
                 })
                 // handle error

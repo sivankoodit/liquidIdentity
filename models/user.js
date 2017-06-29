@@ -28,7 +28,7 @@ var SessionSchema = new Schema({
 var TransferInfoSchema = new Schema({
     transferCode: {
         type: String,
-        unique: true,
+        //unique: true,
         required: true
     },
     validUntil: {
